@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DQR Toolkit — Run planner & EXP calculator</title>
+<meta name="description" content="A checklist and dungeon EXP calculator for Dungeon Quest Reborn. Everything is saved on your own device.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. TOKENS  — change colours here and the whole site follows
+   ============================================================ */
+:root{
+  --obsidian:#14121d;
+  --stone:#1e1b2c;
+  --stone-hi:#272338;
+  --line:#38334f;
+  --text:#eae6f4;
+  --muted:#9b93b4;
+  --torch:#f2b134;      /* main accent: torchlight */
+  --torch-dim:#8a6512;
+  --ember:#e0614f;      /* destructive */
+  --moss:#5ec98d;       /* done */
+  --radius:10px;
+  --pad:clamp(16px,4vw,28px);
+  --display:"Cinzel",Georgia,serif;
+  --body:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 500px at 15% -10%, #2a2140 0%, transparent 60%),
+    radial-gradient(700px 400px at 90% 0%, #1d2a3d 0%, transparent 55%),
+    var(--obsidian);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:var(--body);
+  font-weight:300;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 var(--pad) 80px}
+
+/* ============================================================
+   2. HEADER + TABS
+   ============================================================ */
+header{padding:clamp(28px,7vw,56px) 0 22px}
+.mark{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(30px,7vw,46px);letter-spacing:.06em;
+  margin:0;line-height:1.05;
+}
+.mark span{color:var(--torch)}
+.tagline{color:var(--muted);margin:8px 0 0;font-size:clamp(14px,3.4vw,16px);max-width:52ch}
+.tagline b{color:var(--text);font-weight:500}
+
+nav.tabs{display:flex;gap:6px;margin-top:26px;border-bottom:1px solid var(--line)}
+nav.tabs button{
+  background:none;border:0;border-bottom:2px solid transparent;
+  color:var(--muted);font-family:var(--body);font-size:15px;font-weight:500;
+  padding:10px 14px;cursor:pointer;margin-bottom:-1px;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--torch);border-bottom-color:var(--torch)}
+nav.tabs button:focus-visible{outline:2px solid var(--torch);outline-offset:2px;border-radius:4px}
+
+section.view[hidden]{display:none}
+section.view{padding-top:26px}
+
+/* ============================================================
+   3. SHARED BITS
+   ============================================================ */
+.panel{
+  background:var(--stone);border:1px solid var(--line);
+  border-radius:var(--radius);padding:clamp(14px,3.5vw,20px);
+}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(18px,4.4vw,22px);letter-spacing:.04em;margin:0 0 4px}
+.hint{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+label{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:500}
+input,select,button{font-family:var(--body);font-size:16px}
+input[type=text],input[type=number],select{
+  width:100%;background:var(--obsidian);color:var(--text);
+  border:1px solid var(--line);border-radius:8px;padding:11px 12px;font-weight:400;
+}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--torch);outline-offset:1px}
+input[type=number]{font-family:var(--mono);font-size:15px}
+.btn{
+  background:var(--torch);color:#20180a;border:0;border-radius:8px;
+  padding:11px 18px;font-weight:600;cursor:pointer;letter-spacing:.01em;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.grid{display:grid;gap:14px}
+@media(min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+
+/* ============================================================
+   4. CHECKLIST
+   ============================================================ */
+.addbar{display:grid;gap:10px;grid-template-columns:1fr;margin-bottom:22px}
+@media(min-width:700px){.addbar{grid-template-columns:1fr 150px 120px}}
+.lanes{display:grid;gap:16px}
+@media(min-width:820px){.lanes{grid-template-columns:repeat(3,1fr);align-items:start}}
+.lane h3{
+  font-family:var(--display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+  margin:0 0 2px;font-weight:600;
+}
+.lane[data-lane=now] h3{color:var(--torch)}
+.lane[data-lane=next] h3{color:#7fb4e8}
+.lane[data-lane=later] h3{color:var(--muted)}
+.lane .sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+ul.tasks{list-style:none;margin:0;padding:0;display:grid;gap:8px;min-height:8px}
+li.task{
+  background:var(--stone-hi);border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;
+}
+li.task.done{opacity:.5}
+li.task.done .txt{text-decoration:line-through}
+.tick{
+  appearance:none;width:20px;height:20px;margin:2px 0 0;border:1.5px solid var(--line);
+  border-radius:5px;background:var(--obsidian);cursor:pointer;flex:none;position:relative;
+}
+.tick:checked{background:var(--moss);border-color:var(--moss)}
+.tick:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #12271c;border-width:0 2.5px 2.5px 0;transform:rotate(42deg)}
+.txt{font-size:15px;font-weight:400;word-break:break-word}
+.meta{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
+.chip{
+  background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;
+  border-radius:99px;cursor:pointer;
+}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip.del:hover{color:var(--ember);border-color:var(--ember)}
+.empty{color:var(--muted);font-size:13px;font-style:italic;padding:6px 2px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px;font-size:13px;color:var(--muted)}
+.tools button{padding:8px 14px;font-size:13px}
+
+/* ============================================================
+   5. CALCULATOR
+   ============================================================ */
+.calc{display:grid;gap:18px}
+@media(min-width:900px){.calc{grid-template-columns:1.15fr .85fr;align-items:start}}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend{
+  font-family:var(--display);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--torch);padding:0;margin-bottom:10px;font-weight:600;
+}
+.boosts{display:grid;gap:8px}
+.boost{
+  display:flex;align-items:center;gap:11px;background:var(--obsidian);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;
+}
+.boost:hover{border-color:var(--muted)}
+.boost input{appearance:none;width:18px;height:18px;border:1.5px solid var(--line);border-radius:5px;background:var(--stone);cursor:pointer;flex:none;position:relative}
+.boost input:checked{background:var(--torch);border-color:var(--torch)}
+.boost input:checked::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #20180a;border-width:0 2.5px 2.5px 0;transform:rotate(42deg)}
+.boost .bname{font-size:14.5px;font-weight:400}
+.boost .bval{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--torch)}
+.boost input:disabled + .bname,.boost.off{opacity:.45}
+
+.result{position:sticky;top:16px}
+.readout{text-align:center;padding:22px 12px 18px;border-bottom:1px solid var(--line)}
+.readout .k{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.runs{
+  font-family:var(--mono);font-weight:700;color:var(--torch);
+  font-size:clamp(46px,13vw,68px);line-height:1;margin:6px 0 2px;
+  text-shadow:0 0 34px rgba(242,177,52,.32);
+}
+.runs.bad{color:var(--ember);text-shadow:none;font-size:clamp(20px,5vw,26px);line-height:1.35}
+.rows{display:grid;gap:1px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:16px}
+.row{display:flex;justify-content:space-between;gap:12px;background:var(--stone);padding:10px 13px;font-size:14px}
+.row .k{color:var(--muted);font-weight:300}
+.row .v{font-family:var(--mono);font-size:13.5px;text-align:right;word-break:break-all}
+.row.big .v{color:var(--torch);font-weight:700}
+.note{font-size:12.5px;color:var(--muted);margin:14px 0 0;line-height:1.5}
+footer{border-top:1px solid var(--line);margin-top:56px;padding:20px 0 0;color:var(--muted);font-size:12.5px}
+footer a{color:var(--torch)}
+.warn{background:rgba(224,97,79,.1);border:1px solid rgba(224,97,79,.35);color:#f0b3a9;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1 class="mark">DQR <span>Toolkit</span></h1>
+  <p class="tagline">A run planner and dungeon EXP calculator for Dungeon Quest Reborn. <b>Everything stays on this device</b> — no account, no server, nothing uploaded.</p>
+  <nav class="tabs" role="tablist">
+    <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="true">Checklist</button>
+    <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="false">EXP Calculator</button>
+  </nav>
+</header>
+
+<!-- =========================== CHECKLIST =========================== -->
+<section class="view" id="view-list" role="tabpanel" aria-labelledby="tab-list">
+  <h2>What I'm grinding</h2>
+  <p class="hint">Drop everything you want to get done into a lane. Move it left as it gets closer.</p>
+
+  <div class="addbar">
+    <input type="text" id="newTask" placeholder="e.g. Farm Winter Outpost Hard to level 60" aria-label="New task">
+    <select id="newLane" aria-label="Lane">
+      <option value="now">Do first</option>
+      <option value="next">Do next</option>
+      <option value="later" selected>Do later</option>
+    </select>
+    <button class="btn" id="addBtn">Add</button>
+  </div>
+
+  <div class="lanes" id="lanes">
+    <div class="lane panel" data-lane="now">
+      <h3>Do first</h3><p class="sub">This session.</p>
+      <ul class="tasks" id="lane-now"></ul>
+    </div>
+    <div class="lane panel" data-lane="next">
+      <h3>Do next</h3><p class="sub">Once the first lane clears.</p>
+      <ul class="tasks" id="lane-next"></ul>
+    </div>
+    <div class="lane panel" data-lane="later">
+      <h3>Do later</h3><p class="sub">Someday, no rush.</p>
+      <ul class="tasks" id="lane-later"></ul>
+    </div>
+  </div>
+
+  <div class="tools">
+    <span id="counter"></span>
+    <button class="btn btn-ghost" id="clearDone">Clear finished</button>
+    <button class="btn btn-ghost" id="exportBtn">Export backup</button>
+    <button class="btn btn-ghost" id="importBtn">Restore backup</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+  <p class="note">Saved in this browser only. Clearing site data, or opening the site in a different browser or phone, starts you with an empty list — use the backup buttons to move it across.</p>
+</section>
+
+<!-- =========================== CALCULATOR =========================== -->
+<section class="view" id="view-calc" role="tabpanel" aria-labelledby="tab-calc" hidden>
+  <h2>Dungeon EXP calculator</h2>
+  <p class="hint">Pick a dungeon and a level range. It works out how many clears you need.</p>
+
+  <div class="calc">
+    <div class="panel">
+      <fieldset>
+        <legend>Dungeon</legend>
+        <div class="grid cols-2">
+          <div>
+            <label for="dungeon">Dungeon name</label>
+            <select id="dungeon"></select>
+          </div>
+          <div>
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty"></select>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <label for="minutes">Minutes per run (optional)</label>
+          <input type="number" id="minutes" min="0" step="0.5" placeholder="e.g. 4">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Levels</legend>
+        <div class="grid cols-3">
+          <div>
+            <label for="fromLvl">From level</label>
+            <input type="number" id="fromLvl" min="1" max="299" value="1">
+          </div>
+          <div>
+            <label for="toLvl">To level</label>
+            <input type="number" id="toLvl" min="2" max="300" value="10">
+          </div>
+          <div>
+            <label for="haveXp">Current EXP</label>
+            <input type="text" id="haveXp" inputmode="decimal" value="0" placeholder="1K, 2.5M, 1B…" autocomplete="off">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset style="margin-bottom:0">
+        <legend>EXP boosts</legend>
+        <div class="boosts" id="boosts"></div>
+        <div style="margin-top:12px">
+          <label for="friends">Friends in your party</label>
+          <input type="number" id="friends" min="0" max="10" value="0">
+        </div>
+        <p class="note">Boosts stack by adding together, not multiplying. VIP + potion + a 2x event is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;1&nbsp;+&nbsp;1 = 3.2x, not 4.4x.</p>
+        <p class="note" style="margin-top:8px">Short EXP amounts work: type <b>1K</b>, <b>2.5M</b>, <b>1B</b> or <b>1T</b> instead of the whole number.</p>
+      </fieldset>
+    </div>
+
+    <div class="panel result">
+      <div class="readout">
+        <div class="k">Runs needed</div>
+        <div class="runs" id="runs">—</div>
+        <div class="k" id="runsSub"></div>
+      </div>
+      <div class="rows">
+        <div class="row big"><span class="k">EXP per run with boosts</span><span class="v" id="rEff">—</span></div>
+        <div class="row"><span class="k">Total EXP to gain</span><span class="v" id="rTotal">—</span></div>
+        <div class="row"><span class="k">Boost multiplier</span><span class="v" id="rMult">—</span></div>
+        <div class="row"><span class="k">Levels to climb</span><span class="v" id="rLevels">—</span></div>
+        <div class="row" id="rowTime" hidden><span class="k">Rough grind time</span><span class="v" id="rTime">—</span></div>
+      </div>
+      <p class="note" id="calcNote"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><b style="color:var(--text);font-weight:500">Made by Harry 75%, Claude AI 25%</b></p>
+  <p>EXP values and the level curve come from the <a href="https://dungeonquestroblox.fandom.com/wiki/Levels" target="_blank" rel="noopener">Dungeon Quest wiki</a>. Reborn is a separate community project, so treat the numbers as a close starting point. Fan-made, not affiliated with Roblox.</p>
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — edit these two blocks to change the calculator
+   ============================================================ */
+
+/* Base EXP for one full clear, no boosts applied. */
+const DUNGEONS = [
+  { name:"Desert Temple",      runs:{ Easy:490, Medium:1340, Hard:6550 } },
+  { name:"Winter Outpost",     runs:{ Easy:10860, Medium:27480, Hard:53130 } },
+  { name:"Pirate Island",      runs:{ Insane:73930, Nightmare:84910 } },
+  { name:"King's Castle",      runs:{ Insane:135900, Nightmare:271800 } },
+  { name:"The Underworld",     runs:{ Insane:546000, Nightmare:924000 } },
+  { name:"Samurai Palace",     runs:{ Insane:1934000, Nightmare:3500000 } },
+  { name:"The Canals",         runs:{ Insane:4594000, Nightmare:8005000 } },
+  { name:"Ghastly Harbor",     runs:{ Insane:12840000, Nightmare:24160000 } },
+  { name:"Steampunk Sewers",   runs:{ Insane:35700000, Nightmare:59600000 } },
+  { name:"Orbital Outpost",    runs:{ Insane:329000000, Nightmare:730980000 } },
+  { name:"Volcanic Chambers",  runs:{ Insane:755000000, Nightmare:1225000000 } },
+  { name:"Aquatic Temple",     runs:{ Insane:2034000000, Nightmare:3564000000 } },
+  { name:"Enchanted Forest",   runs:{ Insane:6900000000, Nightmare:11280000000 } },
+  { name:"Northern Lands",     runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } },
+  { name:"Gilded Skies",       runs:{ Insane:63500000000, Nightmare:115500000000 } },
+  { name:"Yokai Peak",         runs:{ Insane:192650000000, Nightmare:350950000000 } }
+];
+
+/* Boosts add to a base of 1. 0.2 means +20%. */
+const BOOSTS = [
+  { id:"vip",    name:"VIP game pass",     add:0.20 },
+  { id:"potion", name:"EXP Boost potion",  add:1.00 },
+  { id:"ev2",    name:"2x EXP event",      add:1.00 },
+  { id:"ev15",   name:"1.5x EXP event",    add:0.50 }
+];
+
+/* Level curve: 84 EXP to clear level 1, rising 13% each level. */
+const xpForLevel = n => Math.round(84 * Math.pow(1.13, n - 1));
+
+/* ============================================================
+   STORAGE — localStorage, with a memory fallback if it's blocked
+   ============================================================ */
+const store = (() => {
+  const mem = {};
+  let ok = true;
+  try { localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }
+  catch(e){ ok = false; }
+  return {
+    ok,
+    get(k){ try { return ok ? localStorage.getItem(k) : (mem[k] ?? null); } catch(e){ return mem[k] ?? null; } },
+    set(k,v){ try { ok ? localStorage.setItem(k,v) : (mem[k]=v); } catch(e){ mem[k]=v; } }
+  };
+})();
+const KEY_TASKS = "dqr.tasks.v1";
+const KEY_CALC  = "dqr.calc.v1";
+
+if(!store.ok){
+  const w = document.createElement("div");
+  w.className = "warn";
+  w.textContent = "This browser is blocking local storage, so your list won't survive a refresh. Turn off private browsing or allow site data.";
+  document.getElementById("view-list").prepend(w);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+const tabs = [["tab-list","view-list"],["tab-calc","view-calc"]];
+tabs.forEach(([t,v]) => {
+  document.getElementById(t).addEventListener("click", () => {
+    tabs.forEach(([t2,v2]) => {
+      document.getElementById(t2).setAttribute("aria-selected", t2===t);
+      document.getElementById(v2).hidden = v2!==v;
+    });
+  });
+});
+
+/* ============================================================
+   CHECKLIST
+   ============================================================ */
+const LANES = ["now","next","later"];
+const LANE_LABEL = { now:"First", next:"Next", later:"Later" };
+let tasks = [];
+try { tasks = JSON.parse(store.get(KEY_TASKS) || "[]"); } catch(e){ tasks = []; }
+
+const saveTasks = () => store.set(KEY_TASKS, JSON.stringify(tasks));
+
+function renderTasks(){
+  LANES.forEach(lane => {
+    const ul = document.getElementById("lane-"+lane);
+    ul.innerHTML = "";
+    const items = tasks.filter(t => t.lane === lane).sort((a,b) => a.done - b.done);
+    if(!items.length){
+      const p = document.createElement("li");
+      p.className = "empty";
+      p.textContent = lane === "now" ? "Nothing queued up." : "Empty.";
+      ul.appendChild(p);
+      return;
+    }
+    items.forEach(t => {
+      const li = document.createElement("li");
+      li.className = "task" + (t.done ? " done" : "");
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.className = "tick"; cb.checked = t.done;
+      cb.setAttribute("aria-label", "Mark done: " + t.text);
+      cb.addEventListener("change", () => { t.done = cb.checked; saveTasks(); renderTasks(); });
+
+      const span = document.createElement("span");
+      span.className = "txt"; span.textContent = t.text;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      LANES.filter(l => l !== t.lane).forEach(l => {
+        const b = document.createElement("button");
+        b.className = "chip";
+        b.textContent = "→ " + LANE_LABEL[l];
+        b.addEventListener("click", () => { t.lane = l; saveTasks(); renderTasks(); });
+        meta.appendChild(b);
+      });
+      const del = document.createElement("button");
+      del.className = "chip del"; del.textContent = "Delete";
+      del.addEventListener("click", () => {
+        tasks = tasks.filter(x => x.id !== t.id); saveTasks(); renderTasks();
+      });
+      meta.appendChild(del);
+
+      li.append(cb, span, meta);
+      ul.appendChild(li);
+    });
+  });
+  const done = tasks.filter(t => t.done).length;
+  document.getElementById("counter").textContent =
+    tasks.length ? `${done} of ${tasks.length} finished` : "Nothing on the list yet.";
+}
+
+function addTask(){
+  const input = document.getElementById("newTask");
+  const text = input.value.trim();
+  if(!text) { input.focus(); return; }
+  tasks.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2,7),
+               text, lane: document.getElementById("newLane").value, done:false });
+  input.value = ""; input.focus();
+  saveTasks(); renderTasks();
+}
+document.getElementById("addBtn").addEventListener("click", addTask);
+document.getElementById("newTask").addEventListener("keydown", e => { if(e.key === "Enter") addTask(); });
+document.getElementById("clearDone").addEventListener("click", () => {
+  if(!tasks.some(t => t.done)) return;
+  if(confirm("Delete every finished task?")){ tasks = tasks.filter(t => !t.done); saveTasks(); renderTasks(); }
+});
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(tasks,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dqr-checklist.json";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+document.getElementById("importBtn").addEventListener("click", () => document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change", e => {
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const data = JSON.parse(r.result);
+      if(!Array.isArray(data)) throw new Error("bad");
+      tasks = data.filter(t => t && typeof t.text === "string")
+                  .map(t => ({ id:t.id || String(Math.random()), text:t.text,
+                               lane: LANES.includes(t.lane) ? t.lane : "later", done: !!t.done }));
+      saveTasks(); renderTasks();
+    } catch(err){ alert("That file isn't a DQR checklist backup."); }
+  };
+  r.readAsText(file);
+  e.target.value = "";
+});
+renderTasks();
+
+/* ============================================================
+   CALCULATOR
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const dungeonSel = $("dungeon"), diffSel = $("difficulty");
+
+DUNGEONS.forEach((d,i) => {
+  const o = document.createElement("option");
+  o.value = i; o.textContent = d.name;
+  dungeonSel.appendChild(o);
+});
+
+BOOSTS.forEach(b => {
+  const l = document.createElement("label");
+  l.className = "boost";
+  l.innerHTML = `<input type="checkbox" id="b-${b.id}">
+    <span class="bname">${b.name}</span>
+    <span class="bval">+${Math.round(b.add*100)}%</span>`;
+  $("boosts").appendChild(l);
+});
+
+function fillDifficulties(keepValue){
+  const d = DUNGEONS[+dungeonSel.value];
+  const keys = Object.keys(d.runs);
+  diffSel.innerHTML = "";
+  keys.forEach(k => {
+    const o = document.createElement("option");
+    o.value = k; o.textContent = k;
+    diffSel.appendChild(o);
+  });
+  if(keepValue && keys.includes(keepValue)) diffSel.value = keepValue;
+}
+
+/* number formatting */
+function compact(n){
+  if(!isFinite(n)) return "—";
+  const u = [[1e15,"Q"],[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e3,"K"]];
+  for(const [v,s] of u){
+    if(Math.abs(n) >= v){
+      let t = (n/v).toFixed(Math.abs(n/v) >= 100 ? 0 : 2);
+      if(t.includes(".")) t = t.replace(/0+$/,"").replace(/\.$/,"");
+      return t + s;
+    }
+  }
+  return Math.round(n).toLocaleString();
+}
+const full = n => Math.round(n).toLocaleString();
+
+function totalXpBetween(from, to){
+  let sum = 0;
+  for(let l = from; l < to; l++) sum += xpForLevel(l);
+  return sum;
+}
+
+/* "1K" -> 1000, "2.5m" -> 2500000, "1,240" -> 1240 */
+const SUFFIX = { k:1e3, m:1e6, b:1e9, t:1e12, q:1e15 };
+function parseAmount(raw){
+  const s = String(raw || "").trim().toLowerCase().replace(/[, ]/g,"");
+  if(!s) return 0;
+  const m = s.match(/^(\d*\.?\d+)([kmbtq]?)$/);
+  if(!m) return NaN;
+  return parseFloat(m[1]) * (SUFFIX[m[2]] || 1);
+}
+
+function calculate(){
+  const from = Math.max(1, Math.floor(+$("fromLvl").value || 1));
+  const to   = Math.floor(+$("toLvl").value || 0);
+  const haveRaw = parseAmount($("haveXp").value);
+  const have = isNaN(haveRaw) ? 0 : Math.max(0, haveRaw);
+  const base = DUNGEONS[+dungeonSel.value].runs[diffSel.value] || 0;
+  const mins = Math.max(0, +$("minutes").value || 0);
+
+  $("haveXp").style.borderColor = isNaN(haveRaw) ? "var(--ember)" : "";
+
+  let mult = 1;
+  const parts = ["1 base"];
+  BOOSTS.forEach(b => {
+    if($("b-"+b.id).checked){ mult += b.add; parts.push("+" + b.add); }
+  });
+  const friends = Math.min(10, Math.max(0, Math.floor(+$("friends").value || 0)));
+  if(friends){ mult += friends * 0.03; parts.push("+" + (friends*0.03).toFixed(2) + " friends"); }
+
+  const eff = base * mult;
+  const runsEl = $("runs"), subEl = $("runsSub"), noteEl = $("calcNote");
+  runsEl.classList.remove("bad");
+
+  $("rMult").textContent = mult.toFixed(2) + "x";
+  $("rEff").textContent = compact(eff) + (eff && eff < 1e6 ? "" : "  (" + full(eff) + ")");
+  $("rLevels").textContent = to > from ? (to - from) + "  (" + from + " → " + to + ")" : "—";
+
+  if(to <= from){
+    runsEl.textContent = "Set a higher target level";
+    runsEl.classList.add("bad");
+    subEl.textContent = ""; noteEl.textContent = "";
+    $("rTotal").textContent = "—"; $("rowTime").hidden = true;
+    return;
+  }
+
+  const gross = totalXpBetween(from, to);
+  const need = Math.max(0, gross - have);
+  $("rTotal").textContent = compact(need) + "  (" + full(need) + ")";
+
+  if(!eff){
+    runsEl.textContent = "Enter EXP per clear";
+    runsEl.classList.add("bad");
+    subEl.textContent = ""; $("rowTime").hidden = true; noteEl.textContent = "";
+    return;
+  }
+
+  const runs = Math.ceil(need / eff);
+  runsEl.textContent = runs.toLocaleString();
+  subEl.textContent = DUNGEONS[+dungeonSel.value].name + " · " + diffSel.value;
+
+  if(mins > 0){
+    const total = runs * mins;
+    const h = Math.floor(total / 60), m = Math.round(total % 60);
+    $("rTime").textContent = h ? `${h}h ${m}m` : `${m}m`;
+    $("rowTime").hidden = false;
+  } else $("rowTime").hidden = true;
+
+  noteEl.textContent = "Multiplier: " + parts.join(" ") + " = " + mult.toFixed(2)
+    + "x. Runs are rounded up, and a partly finished level only counts if you filled in the EXP box.";
+
+  store.set(KEY_CALC, JSON.stringify({
+    d: dungeonSel.value, diff: diffSel.value, from, to, mins, friends,
+    b: BOOSTS.filter(b => $("b-"+b.id).checked).map(b => b.id)
+  }));
+}
+
+dungeonSel.addEventListener("change", () => { fillDifficulties(); calculate(); });
+diffSel.addEventListener("change", calculate);
+["minutes","fromLvl","toLvl","haveXp","friends"].forEach(id =>
+  $(id).addEventListener("input", calculate));
+BOOSTS.forEach(b => $("b-"+b.id).addEventListener("change", calculate));
+
+/* restore last used settings */
+(function restore(){
+  let s = null;
+  try { s = JSON.parse(store.get(KEY_CALC) || "null"); } catch(e){}
+  if(s && DUNGEONS[+s.d]){
+    dungeonSel.value = s.d;
+    fillDifficulties(s.diff);
+    $("fromLvl").value = s.from; $("toLvl").value = s.to;
+    if(s.mins) $("minutes").value = s.mins;
+    $("friends").value = s.friends || 0;
+    (s.b || []).forEach(id => { const el = $("b-"+id); if(el) el.checked = true; });
+  } else {
+    fillDifficulties();
+  }
+  calculate();
+})();
+</script>
+</body>
+</html>
