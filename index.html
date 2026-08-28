@@ -3,15 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DQR Toolkit — run calculator & grind list</title>
-<meta name="description" content="Work out how many dungeon clears you need in Dungeon Quest Reborn, and keep a grind list. Everything is saved on your own device.">
+<title>DQR Toolkit — run calculator & dungeon EXP values</title>
+<meta name="description" content="Work out how many dungeon clears you need in Dungeon Quest Reborn, and look up every dungeon's base EXP. Everything is saved on your own device.">
 <meta name="theme-color" content="#0a0e15">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Why tf are you looking at my code you nerd? i know how to code a little but half of it are claude's work so i dont take full credit.
-   */
+/* ============================================================
+   1. TOKENS
+   The whole page takes its accent from the difficulty you pick.
+   --tier / --tier-rgb are rewritten by JS.
+   ============================================================ */
 :root{
   --void:#0a0e15;
   --plate:#131926;
@@ -188,58 +191,34 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 
 
 /* ============================================================
-   5. GRIND LIST
+   5. ALL DUNGEONS EXP VALUES
    ============================================================ */
-.addbar{display:grid;gap:10px}
-.addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.lanepick{display:flex;gap:6px;flex:1}
-.lopt{
-  --c:var(--dim);flex:1;background:var(--void);border:1px solid var(--edge);border-radius:var(--r);
-  padding:9px 10px;color:var(--dim);font-family:var(--display);font-weight:600;
-  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+.sectitle{margin:0 0 4px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.03em;color:var(--ink)}
+.expTableWrap{margin-top:14px;overflow-x:auto}
+table.expTable{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+table.expTable th,table.expTable td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--edge-soft)}
+table.expTable thead th{
+  font-family:var(--display);font-weight:600;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--edge);
 }
-.lopt:hover{color:var(--ink);border-color:#3a4667}
-.lopt[aria-pressed="true"]{color:var(--c);border-color:var(--c);background:rgba(255,255,255,.03)}
-.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px}
-.fchip{
-  background:none;border:1px solid var(--edge);border-radius:99px;padding:6px 13px;
-  color:var(--dim);font-size:12.5px;
+table.expTable tbody tr:hover{background:rgba(255,255,255,.02)}
+table.expTable td.dname{font-weight:600;color:var(--ink);white-space:normal;min-width:150px}
+table.expTable td.val{font-family:var(--mono);color:var(--dim)}
+table.expTable td.val.set{color:var(--ink)}
+table.expTable td.val.blank{opacity:.4}
+.pending{
+  display:inline-block;margin-left:8px;font-family:var(--display);font-weight:600;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--insane);border:1px solid var(--insane);
+  border-radius:99px;padding:2px 7px;vertical-align:middle;white-space:nowrap;
 }
-.fchip:hover{color:var(--ink);border-color:#3a4667}
-.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--void);font-weight:600}
-.progress{height:4px;background:var(--edge-soft);border-radius:99px;overflow:hidden;margin-top:14px}
-.progress i{display:block;height:100%;width:0;background:var(--easy);transition:width .3s ease}
-.count{font-size:12.5px;color:var(--dim);margin:10px 0 0}
-
-ul.list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
-li.item{
-  --c:var(--dim);
-  background:var(--plate);border:1px solid var(--edge);border-left:3px solid var(--c);
-  border-radius:var(--r);padding:11px 12px;
-  display:grid;grid-template-columns:auto 1fr auto auto;gap:11px;align-items:center;
+.watch{
+  display:inline-block;margin-left:8px;font-family:var(--display);font-weight:600;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--nightmare);border:1px solid var(--nightmare);
+  border-radius:99px;padding:2px 7px;vertical-align:middle;white-space:nowrap;
 }
-li.item.done{opacity:.42}
-li.item.done .txt{text-decoration:line-through}
-.tick{
-  appearance:none;width:21px;height:21px;margin:0;flex:none;position:relative;
-  border:1.5px solid var(--edge);border-radius:var(--r);background:var(--void);cursor:pointer;
-}
-.tick:hover{border-color:var(--easy)}
-.tick:checked{background:var(--easy);border-color:var(--easy)}
-.tick:checked::after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;border:solid #0e2419;border-width:0 2.5px 2.5px 0;transform:rotate(42deg)}
-.txt{font-size:15px;overflow-wrap:anywhere}
-.prio{
-  background:none;border:1px solid transparent;border-radius:99px;padding:3px 8px;
-  font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--c);
-}
-.prio:hover{border-color:var(--c)}
-.del{background:none;border:0;color:#5a6580;font-size:20px;line-height:1;padding:3px 6px;border-radius:var(--r)}
-.del:hover{color:var(--nightmare)}
-.empty{
-  border:1px dashed var(--edge);border-radius:6px;padding:26px 18px;text-align:center;
-  color:var(--dim);font-size:14px;margin-top:14px;
-}
+.expNotes{margin-top:14px;display:grid;gap:8px}
+.expNotes .warn{margin-bottom:0}
+.expNotes .warn b{color:#ffb3b9}
 .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .tools button{padding:9px 14px;font-size:13px}
 
@@ -256,10 +235,10 @@ footer b{color:var(--ink);font-weight:600}
 
 <header>
   <h1 class="logo">DQR <i>//</i> Toolkit</h1>
-  <p class="tagline">How many clears until your next level, and a list of what you're grinding. Saved on this device, nothing uploaded.</p>
+  <p class="tagline">How many clears until your next level, and every dungeon's base EXP. Saved on this device, nothing uploaded.</p>
   <nav class="switch" role="tablist" aria-label="Sections">
     <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Run calculator</button>
-    <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">Grind list</button>
+    <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">All Dungeons EXP</button>
   </nav>
 </header>
 
@@ -318,7 +297,7 @@ footer b{color:var(--ink);font-weight:600}
       <div class="field">
         <span class="flabel">EXP boosts</span>
         <div class="pills" id="boosts"></div>
-        <p class="help">Boosts add up, they don't multiply. VIP + EXP Boost + a 2x event is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;1&nbsp;+&nbsp;1 = <b>3.2x</b>, not 4.4x. The two events can&rsquo;t run at once.</p>
+        <p class="help">Boosts add up, they don't multiply. VIP + Solo + HC + EXP Boost is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;0.1&nbsp;+&nbsp;0.1&nbsp;+&nbsp;1 = <b>2.4x</b>, not something you'd get by multiplying them together. The two events can&rsquo;t run at once.</p>
       </div>
 
       <div class="field">
@@ -331,56 +310,42 @@ footer b{color:var(--ink);font-weight:600}
   </div>
 </section>
 
-<!-- =========================== GRIND LIST =========================== -->
+<!-- =========================== ALL DUNGEONS EXP VALUES =========================== -->
 <section class="view" id="view-list" role="tabpanel" aria-labelledby="tab-list" hidden>
-  <div class="addbar">
-    <input type="text" id="newTask" placeholder="What are you grinding? e.g. Yokai Peak Nightmare to 200" aria-label="New task">
-    <div class="addrow">
-      <div class="lanepick" id="lanePick" role="group" aria-label="Priority">
-        <button class="lopt" type="button" data-lane="now" aria-pressed="false">First</button>
-        <button class="lopt" type="button" data-lane="next" aria-pressed="false">Next</button>
-        <button class="lopt" type="button" data-lane="later" aria-pressed="true">Later</button>
-      </div>
-      <button class="btn" id="addBtn">Add</button>
-    </div>
+
+  <div class="plate pad">
+    <h2 class="sectitle">All Dungeons EXP Values — Not Including Boss Raids</h2>
+    <p class="help" style="margin:0">Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Boss raids aren't included here. Rows marked <span class="pending">checking</span> are being re-verified running Solo + HC + VIP — the numbers may still be off until that's done. Rows marked <span class="watch">watch</span> have a known reason their numbers might change soon — see the note below the table.</p>
   </div>
 
-  <div class="filters" id="filters" role="group" aria-label="Filter">
-    <button class="fchip" data-f="all" aria-pressed="true">Everything</button>
-    <button class="fchip" data-f="now" aria-pressed="false">First</button>
-    <button class="fchip" data-f="next" aria-pressed="false">Next</button>
-    <button class="fchip" data-f="later" aria-pressed="false">Later</button>
-    <button class="fchip" data-f="done" aria-pressed="false">Finished</button>
+  <div class="expTableWrap plate" id="expTableWrap">
+    <table class="expTable">
+      <thead><tr id="expHead"></tr></thead>
+      <tbody id="expBody"></tbody>
+    </table>
   </div>
 
-  <div class="progress"><i id="bar"></i></div>
-  <p class="count" id="counter"></p>
+  <div class="expNotes" id="expNotes"></div>
 
-  <ul class="list" id="list"></ul>
-  <div class="empty" id="emptyBox" hidden></div>
-
-  <div class="tools">
-    <button class="btn btn-quiet" id="clearDone">Clear finished</button>
-    <button class="btn btn-quiet" id="exportBtn">Export backup</button>
-    <button class="btn btn-quiet" id="importBtn">Restore backup</button>
-    <input type="file" id="importFile" accept="application/json" hidden>
-  </div>
-  <p class="help" style="margin-top:12px">This list lives in this browser only. A different phone or browser starts empty — use the backup buttons to move it across.</p>
 </section>
 
 <footer>
-  <p><b>Made by Harry 40%(Roblox Username: lqqvn), Claude AI 60% (Most of the code are mainly coded by claude, so I dont take full credit).</b></p>
-  <p><b>P.S: I also know to code, but forgive me for using AI because I really don't know how to finish what I've been doing without the help of claude.</b>
-  <p>EXP values and the level curve come from the <a href="https://dungeonquestroblox.fandom.com/wiki/Levels" target="_blank" rel="noopener">Dungeon Quest wiki</a>. Reborn is a separate community project, so treat the numbers as a close starting point. Fan-made, not affiliated with Roblox.</p>
+  <p><b>Made by Harry</b></p>
+  <p><b>Contributor:</b> FriedByFluoriide — checked the EXP values from Orbital Outpost to Enchanted Forest.</p>
+  <p>EXP values for the dungeons before Orbital Outpost are learned from the old <a href="https://dungeonquestroblox.fandom.com/wiki/Levels" target="_blank" rel="noopener">Dungeon Quest wiki</a>. Orbital Outpost through Enchanted Forest were checked in-game. Reborn is a separate community project, so treat the numbers as a close starting point. Fan-made, not affiliated with Roblox.</p>
 </footer>
 
 </div>
 
 <script>
-
+/* ============================================================
+   DATA — edit these two blocks to change the calculator
+   ============================================================ */
 
 /* Base EXP for one full clear, no boosts applied. */
 const DUNGEONS = [
+  /* Desert Temple and Winter Outpost are the only two dungeons with all five
+     difficulties — every dungeon below stops at Hard. */
   { name:"Desert Temple",  runs:{ Easy:574, Medium:906, Hard:1934, Insane:3176, Nightmare:6722 } },
   { name:"Winter Outpost", runs:{ Easy:8340, Medium:11300, Hard:16140, Insane:27840, Nightmare:46180 } },
   { name:"Pirate Island",      runs:{ Insane:73930, Nightmare:84910 } },
@@ -390,20 +355,27 @@ const DUNGEONS = [
   { name:"The Canals",         runs:{ Insane:4594000, Nightmare:8005000 } },
   { name:"Ghastly Harbor",     runs:{ Insane:12840000, Nightmare:24160000 } },
   { name:"Steampunk Sewers",   runs:{ Insane:35700000, Nightmare:59600000 } },
-  { name:"Orbital Outpost",    runs:{ Insane:329000000, Nightmare:730980000 } }, /* curry fucking nerfed the exp?? from 329000000, Nightmare:730980000 to Insane: 310000000, Nightmare: 450000000 */
-  { name:"Volcanic Chambers",  runs:{ Insane:875000000, Nightmare:1433333333 } }, /*VC TO EF NM EXP IS DIFFERENT IN DQR, so the new ones are these solo(10% extra gain) HC */
-  { name:"Aquatic Temple",     runs:{ Insane:2375000000, Nightmare:4158333333 } },
-  { name:"Enchanted Forest",   runs:{ Insane:8050000000, Nightmare:13158333333 } },
-  { name:"Northern Lands",     runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } }, /* will change soon */
-  { name:"Gilded Skies(Soon)",       runs:{ Insane:63500000000, Nightmare:115500000000 } },/* will change soon */
-  { name:"Yokai Peak(?)",         runs:{ Insane:192650000000, Nightmare:350950000000 } }/* will change soon */
+  /* OO -> EF: re-checked running Solo + HC + VIP and confirmed against the
+     raw values reported back, so the `pending` flags are all cleared. Add
+     `pending:true` to an entry again if a dungeon needs another recheck —
+     to work a boosted run back to its raw base value: divide what you
+     gained by the multiplier that was active. */
+  { name:"Orbital Outpost",    runs:{ Insane:222000000, Nightmare:320000000 } },
+  { name:"Volcanic Chambers",  runs:{ Insane:750000000, Nightmare:1229000000 } },
+  { name:"Aquatic Temple",     runs:{ Insane:2036000000, Nightmare:3564000000 } },
+  { name:"Enchanted Forest",   runs:{ Insane:6900000000, Nightmare:11280000000 } },
+  { name:"Northern Lands",     note:"NL is getting a re-release on Aug 30 — Curry (DQR's owner) will probably change these EXP values then, so treat the numbers below as pre-release until they're checked again after launch.",
+                                runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } },
+  { name:"Gilded Skies",       runs:{ Insane:63500000000, Nightmare:115500000000 } },
+  { name:"Yokai Peak",         runs:{ Insane:192650000000, Nightmare:350950000000 } }
 ];
-  /*EXP FROM OO TO EF ARE CORRECT EXP, Since Curry Changed it, Prob gonna change it again for NL and GS soon, DUNGEONS BEFORE OO INSANE STILL THE SAME FOR WIKI
 
 /* Boosts add to a base of 1. 0.2 means +20%.
    Anything sharing a "group" can only have one picked at a time. */
 const BOOSTS = [
   { id:"vip",      name:"VIP game pass", add:0.20 },
+  { id:"solo",     name:"Solo",          add:0.10 },
+  { id:"hc",       name:"HC (Hardcore)", add:0.10 },
   { id:"expboost", name:"EXP Boost",     add:1.00 },
   { id:"ev2",      name:"2x EXP event",  add:1.00, group:"event" },
   { id:"ev15",     name:"1.5x EXP event",add:0.50, group:"event" }
@@ -432,15 +404,14 @@ const store = (() => {
     set(k,v){ try { ok ? localStorage.setItem(k,v) : (mem[k]=v); } catch(e){ mem[k]=v; } }
   };
 })();
-const KEY_TASKS = "dqr.tasks.v1";
 const KEY_CALC  = "dqr.calc.v1";
 const $ = id => document.getElementById(id);
 
 if(!store.ok){
   const w = document.createElement("div");
   w.className = "warn";
-  w.textContent = "This browser is blocking local storage, so nothing here will survive a refresh. Turn off private browsing or allow site data.";
-  $("view-list").prepend(w);
+  w.textContent = "This browser is blocking local storage, so your calculator settings won't survive a refresh. Turn off private browsing or allow site data.";
+  $("view-calc").prepend(w);
 }
 
 /* ============================================================
@@ -472,127 +443,55 @@ function paint(colour){
 });
 
 /* ============================================================
-   GRIND LIST
+   ALL DUNGEONS EXP VALUES — table
    ============================================================ */
-const LANES = ["now","next","later"];
-const LANE_LABEL = { now:"First", next:"Next", later:"Later" };
-const LANE_COLOUR = { now:"var(--insane)", next:"var(--medium)", later:"var(--dim)" };
-let tasks = [];
-try { tasks = JSON.parse(store.get(KEY_TASKS) || "[]"); } catch(e){ tasks = []; }
-let filter = "all";
-let newLane = "later";
+/* Fixed column order; a dungeon only fills the columns it has. */
+const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Odin"];
 
-const saveTasks = () => store.set(KEY_TASKS, JSON.stringify(tasks));
+function fmtVal(n){
+  if(!n) return "";
+  return n.toLocaleString();
+}
 
-$("lanePick").addEventListener("click", e => {
-  const b = e.target.closest(".lopt"); if(!b) return;
-  newLane = b.dataset.lane;
-  [...$("lanePick").children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-});
-[...$("lanePick").children].forEach(b => b.style.setProperty("--c", LANE_COLOUR[b.dataset.lane]));
+function buildExpTable(){
+  const cols = DIFF_ORDER.filter(k => DUNGEONS.some(d => k in d.runs));
 
-$("filters").addEventListener("click", e => {
-  const b = e.target.closest(".fchip"); if(!b) return;
-  filter = b.dataset.f;
-  [...$("filters").children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  renderTasks();
-});
+  const head = $("expHead");
+  head.innerHTML = "<th>Dungeon</th>" + cols.map(c => `<th>${c}</th>`).join("");
 
-function renderTasks(){
-  const ul = $("list");
-  ul.innerHTML = "";
-
-  const order = { now:0, next:1, later:2 };
-  const shown = tasks
-    .filter(t => filter === "all" ? true : filter === "done" ? t.done : (t.lane === filter && !t.done))
-    .sort((a,b) => (a.done - b.done) || (order[a.lane] - order[b.lane]));
-
-  shown.forEach(t => {
-    const li = document.createElement("li");
-    li.className = "item" + (t.done ? " done" : "");
-    li.style.setProperty("--c", LANE_COLOUR[t.lane]);
-
-    const cb = document.createElement("input");
-    cb.type = "checkbox"; cb.className = "tick"; cb.checked = t.done;
-    cb.setAttribute("aria-label", "Mark finished: " + t.text);
-    cb.addEventListener("change", () => { t.done = cb.checked; saveTasks(); renderTasks(); });
-
-    const span = document.createElement("span");
-    span.className = "txt"; span.textContent = t.text;
-
-    const prio = document.createElement("button");
-    prio.className = "prio"; prio.type = "button";
-    prio.textContent = LANE_LABEL[t.lane];
-    prio.title = "Change priority";
-    prio.setAttribute("aria-label", "Priority " + LANE_LABEL[t.lane] + ". Tap to change.");
-    prio.addEventListener("click", () => {
-      t.lane = LANES[(LANES.indexOf(t.lane) + 1) % LANES.length];
-      saveTasks(); renderTasks();
+  const body = $("expBody");
+  body.innerHTML = "";
+  DUNGEONS.forEach(d => {
+    const tr = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    nameCell.className = "dname";
+    const badge = d.pending ? '<span class="pending">checking</span>'
+                : d.note    ? '<span class="watch">watch</span>'
+                : "";
+    nameCell.innerHTML = d.name + badge;
+    if(d.note) nameCell.title = d.note;
+    tr.appendChild(nameCell);
+    cols.forEach(c => {
+      const td = document.createElement("td");
+      const v = d.runs[c];
+      td.className = "val " + (v ? "set" : "blank");
+      td.textContent = v ? compact(v) : "—";
+      if(v) td.title = fmtVal(v) + " EXP";
+      tr.appendChild(td);
     });
-
-    const del = document.createElement("button");
-    del.className = "del"; del.type = "button"; del.innerHTML = "&times;";
-    del.setAttribute("aria-label", "Delete: " + t.text);
-    del.addEventListener("click", () => { tasks = tasks.filter(x => x.id !== t.id); saveTasks(); renderTasks(); });
-
-    li.append(cb, span, prio, del);
-    ul.appendChild(li);
+    body.appendChild(tr);
   });
 
-  const box = $("emptyBox");
-  box.hidden = shown.length > 0;
-  box.textContent = tasks.length === 0
-    ? "Nothing on the list. Add the first thing you want to grind."
-    : filter === "done" ? "Nothing finished yet." : "Nothing in this lane.";
-
-  const done = tasks.filter(t => t.done).length;
-  $("counter").textContent = tasks.length ? `${done} of ${tasks.length} finished` : "";
-  $("bar").style.width = tasks.length ? (done / tasks.length * 100) + "%" : "0%";
-}
-
-function addTask(){
-  const input = $("newTask");
-  const text = input.value.trim();
-  if(!text){ input.focus(); return; }
-  tasks.push({
-    id: Date.now() + "-" + Math.random().toString(36).slice(2,7),
-    text, lane:newLane, done:false
+  const notesBox = $("expNotes");
+  notesBox.innerHTML = "";
+  DUNGEONS.filter(d => d.note).forEach(d => {
+    const w = document.createElement("div");
+    w.className = "warn";
+    w.innerHTML = `<b>${d.name}:</b> ${d.note}`;
+    notesBox.appendChild(w);
   });
-  input.value = ""; input.focus();
-  saveTasks(); renderTasks();
 }
-$("addBtn").addEventListener("click", addTask);
-$("newTask").addEventListener("keydown", e => { if(e.key === "Enter") addTask(); });
-
-$("clearDone").addEventListener("click", () => {
-  if(!tasks.some(t => t.done)) return;
-  if(confirm("Delete every finished task?")){ tasks = tasks.filter(t => !t.done); saveTasks(); renderTasks(); }
-});
-$("exportBtn").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(tasks,null,2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "dqr-list.json";
-  a.click(); URL.revokeObjectURL(a.href);
-});
-$("importBtn").addEventListener("click", () => $("importFile").click());
-$("importFile").addEventListener("change", e => {
-  const file = e.target.files[0]; if(!file) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try{
-      const data = JSON.parse(r.result);
-      if(!Array.isArray(data)) throw new Error("bad");
-      tasks = data.filter(t => t && typeof t.text === "string")
-                  .map(t => ({ id:t.id || String(Math.random()), text:t.text,
-                               lane: LANES.includes(t.lane) ? t.lane : "later", done: !!t.done }));
-      saveTasks(); renderTasks();
-    } catch(err){ alert("That file isn't a DQR list backup."); }
-  };
-  r.readAsText(file);
-  e.target.value = "";
-});
-renderTasks();
+buildExpTable();
 
 /* ============================================================
    CALCULATOR
