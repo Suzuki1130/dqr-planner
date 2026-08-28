@@ -381,12 +381,8 @@ footer b{color:var(--ink);font-weight:600}
 
 /* Base EXP for one full clear, no boosts applied. */
 const DUNGEONS = [
-  /* Desert Temple and Winter Outpost maps are the only two with all five difficulties — the
-     remasters stop at Hard. The wiki's EXP table also stops at Hard for both(LEGACY),
-     so Insane and Nightmare sit at 0 here. Put in the number the game shows
-     you and they start working straight away. */
-  { name:"Desert Temple",  runs:{ Easy:490, Medium:1340, Hard:6550, Insane:0, Nightmare:0 } },
-  { name:"Winter Outpost", runs:{ Easy:10860, Medium:27480, Hard:53130, Insane:0, Nightmare:0 } },
+  { name:"Desert Temple",  runs:{ Easy:574, Medium:906, Hard:1934, Insane:3176, Nightmare:6722 } },
+  { name:"Winter Outpost", runs:{ Easy:8340, Medium:11300, Hard:16140, Insane:27840, Nightmare:46180 } },
   { name:"Pirate Island",      runs:{ Insane:73930, Nightmare:84910 } },
   { name:"King's Castle",      runs:{ Insane:135900, Nightmare:271800 } },
   { name:"The Underworld",     runs:{ Insane:546000, Nightmare:924000 } },
@@ -394,15 +390,15 @@ const DUNGEONS = [
   { name:"The Canals",         runs:{ Insane:4594000, Nightmare:8005000 } },
   { name:"Ghastly Harbor",     runs:{ Insane:12840000, Nightmare:24160000 } },
   { name:"Steampunk Sewers",   runs:{ Insane:35700000, Nightmare:59600000 } },
-  { name:"Orbital Outpost",    runs:{ Insane:329000000, Nightmare:730980000 } },
+  { name:"Orbital Outpost",    runs:{ Insane:329000000, Nightmare:730980000 } }, /* curry fucking nerfed the exp?? from 329000000, Nightmare:730980000 to Insane: 310000000, Nightmare: 450000000 */
   { name:"Volcanic Chambers",  runs:{ Insane:1050000000, Nightmare:1720000000 } }, /*VC TO EF NM EXP IS DIFFERENT IN DQR, so the new ones are these solo(10% extra gain) HC */
   { name:"Aquatic Temple",     runs:{ Insane:2850000000, Nightmare:4990000000 } },
   { name:"Enchanted Forest",   runs:{ Insane:9660000000, Nightmare:15790000000 } },
-  { name:"Northern Lands",     runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } },
-  { name:"Gilded Skies(Soon)",       runs:{ Insane:63500000000, Nightmare:115500000000 } },
-  { name:"Yokai Peak(?)",         runs:{ Insane:192650000000, Nightmare:350950000000 } }
+  { name:"Northern Lands",     runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } }, /* will change soon */
+  { name:"Gilded Skies(Soon)",       runs:{ Insane:63500000000, Nightmare:115500000000 } },/* will change soon */
+  { name:"Yokai Peak(?)",         runs:{ Insane:192650000000, Nightmare:350950000000 } }/* will change soon */
 ];
-  /*EXP FROM OO TO EF ARE CORRECT EXP, Since Curry Changed it, Prob gonna change it again for NL and GS soon
+  /*EXP FROM OO TO EF ARE CORRECT EXP, Since Curry Changed it, Prob gonna change it again for NL and GS soon, DUNGEONS BEFORE OO INSANE STILL THE SAME FOR WIKI
 
 /* Boosts add to a base of 1. 0.2 means +20%.
    Anything sharing a "group" can only have one picked at a time. */
