@@ -356,6 +356,7 @@ const BOSS_RAID = {
   xp: 130000000,   /* EXP per clear, unboosted — confirmed via the in-game EXP Earnings panel */
   tierNote: "Tiers 1–30 give the same EXP — confirmed by the in-game EXP Earnings panel. Higher tiers give better loot, not more EXP.",
   excludeBoosts: ["hc"],   /* Boss Raid has no Hardcore mode, per the old wiki's Boss Raid (Legacy) page */
+  pending: true,   /* still being double-checked — not confident yet that everything above is accurate */
   source: "Orange, DQR's administrator"
 };
 
@@ -377,7 +378,7 @@ const DUNGEONS = [
      Earnings panel. See the Boss Raids panel below the table for the rest
      of what's known (level cap, tier/loot note, etc.) — BOSS_RAID up above
      is the source for this row too, so they can't drift out of sync. */
-  { name:"Boss Raid (Lvl 130)", excludeBoosts:BOSS_RAID.excludeBoosts, runs:{ "Tier 30":BOSS_RAID.xp } },
+  { name:"Boss Raid (Lvl 130)", pending:BOSS_RAID.pending, excludeBoosts:BOSS_RAID.excludeBoosts, runs:{ "Tier 30":BOSS_RAID.xp } },
   /* OO -> EF: re-checked running Solo + HC + VIP and confirmed against the
      raw values reported back, so the `pending` flags are all cleared. Add
      `pending:true` to an entry again if a dungeon needs another recheck —
@@ -541,9 +542,11 @@ function buildRaidInfo(){
       <div class="stat"><span class="sl">+ VIP &amp; Boost</span><span class="sv">${compact(r.xp * (1 + vip + boost))}</span></div>
     </div>` : "";
 
+  const pendingBadge = r.pending ? '<span class="pending">checking</span>' : "";
+
   $("raidInfo").innerHTML = `
-    <h2 class="sectitle">Boss Raids</h2>
-    <p class="help" style="margin:0 0 10px">Also in the table above as its own row, under a "Tier 30" column since raids run on a different ladder than dungeon difficulties. The rest of what's known:</p>
+    <h2 class="sectitle">Boss Raids${pendingBadge}</h2>
+    <p class="help" style="margin:0 0 10px">Also in the table above as its own row, under a "Tier 30" column since raids run on a different ladder than dungeon difficulties. Everything below is still being double-checked, so treat it as a starting point rather than confirmed. What's known so far:</p>
     <p class="help"><b>Unlocks at level ${r.levelReq}</b> — ${r.tier}.</p>
     <p class="help"><b>EXP only counts up to level ${r.xpCapLevel}.</b> Past that, raid clears stop granting level-up EXP, so it isn't possible to skip the regular dungeons by grinding raids alone. — ${r.source}</p>
     <p class="help">${r.tierNote}</p>
