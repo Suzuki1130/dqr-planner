@@ -314,8 +314,8 @@ footer b{color:var(--ink);font-weight:600}
 <section class="view" id="view-list" role="tabpanel" aria-labelledby="tab-list" hidden>
 
   <div class="plate pad">
-    <h2 class="sectitle">All Dungeons EXP Values — Not Including Boss Raids</h2>
-    <p class="help" style="margin:0">Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Boss raids aren't included here. Rows marked <span class="pending">checking</span> are being re-verified running Solo + HC + VIP — the numbers may still be off until that's done. Rows marked <span class="watch">watch</span> have a known reason their numbers might change soon — see the note below the table.</p>
+    <h2 class="sectitle">All Dungeons EXP Values</h2>
+    <p class="help" style="margin:0">Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Boss Raid is in here too, under its own "Tier 30" column — see the panel below the table for the rest of what's known about it. Rows marked <span class="pending">checking</span> are being re-verified running Solo + HC + VIP — the numbers may still be off until that's done. Rows marked <span class="watch">watch</span> have a known reason their numbers might change soon — see the note below the table.</p>
   </div>
 
   <div class="expTableWrap plate" id="expTableWrap">
@@ -326,6 +326,8 @@ footer b{color:var(--ink);font-weight:600}
   </div>
 
   <div class="expNotes" id="expNotes"></div>
+
+  <div class="plate pad" id="raidInfo" style="margin-top:18px"></div>
 
 </section>
 
@@ -342,6 +344,18 @@ footer b{color:var(--ink);font-weight:600}
    DATA — edit these two blocks to change the calculator
    ============================================================ */
 
+/* Boss raids are a separate system from the dungeons below, but the raid's
+   Tier 30 row in DUNGEONS reads its EXP from here too, so the two can't
+   drift out of sync — change the number in one place. */
+const BOSS_RAID = {
+  levelReq: 130,
+  tier: "Tier 30 only",
+  xpCapLevel: 145,
+  xp: 130000000,   /* EXP per clear, unboosted — confirmed via the in-game EXP Earnings panel */
+  tierNote: "Tiers 1–30 give the same EXP — confirmed by the in-game EXP Earnings panel. Higher tiers give better loot, not more EXP.",
+  source: "Orange, DQR's administrator"
+};
+
 /* Base EXP for one full clear, no boosts applied. */
 const DUNGEONS = [
   /* Desert Temple and Winter Outpost are the only two dungeons with all five
@@ -355,6 +369,12 @@ const DUNGEONS = [
   { name:"The Canals",         runs:{ Insane:4594000, Nightmare:8005000 } },
   { name:"Ghastly Harbor",     runs:{ Insane:12840000, Nightmare:24160000 } },
   { name:"Steampunk Sewers",   runs:{ Insane:35700000, Nightmare:59600000 } },
+  /* Boss Raid unlocks at level 130 and only has one tier's worth of EXP —
+     Tier 1-30 all give the same amount, confirmed via the in-game EXP
+     Earnings panel. See the Boss Raids panel below the table for the rest
+     of what's known (level cap, tier/loot note, etc.) — BOSS_RAID up above
+     is the source for this row too, so they can't drift out of sync. */
+  { name:"Boss Raid (Lvl 130)", runs:{ "Tier 30":BOSS_RAID.xp } },
   /* OO -> EF: re-checked running Solo + HC + VIP and confirmed against the
      raw values reported back, so the `pending` flags are all cleared. Add
      `pending:true` to an entry again if a dungeon needs another recheck —
@@ -446,7 +466,7 @@ function paint(colour){
    ALL DUNGEONS EXP VALUES — table
    ============================================================ */
 /* Fixed column order; a dungeon only fills the columns it has. */
-const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Odin"];
+const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Odin","Tier 30"];
 
 function fmtVal(n){
   if(!n) return "";
@@ -492,6 +512,38 @@ function buildExpTable(){
   });
 }
 buildExpTable();
+
+/* ============================================================
+   BOSS RAIDS — info panel (extra context the table row can't fit)
+   ============================================================ */
+function buildRaidInfo(){
+  const r = BOSS_RAID;
+  const vip = BOOSTS.find(b => b.id === "vip").add;
+  const boost = BOOSTS.find(b => b.id === "expboost").add;
+
+  const xpLine = r.xp
+    ? `<span class="val set" style="font-family:var(--mono)">${compact(r.xp)}</span> EXP per clear, same for every tier.`
+    : `<span class="pending">no XP yet</span> — EXP per clear hasn't been logged yet.`;
+
+  const strip = r.xp ? `
+    <div class="strip" style="border-top:1px solid var(--edge);padding-top:14px;margin-top:14px">
+      <div class="stat"><span class="sl">Base</span><span class="sv">${compact(r.xp)}</span></div>
+      <div class="stat"><span class="sl">+ VIP</span><span class="sv">${compact(r.xp * (1 + vip))}</span></div>
+      <div class="stat"><span class="sl">+ Boost</span><span class="sv">${compact(r.xp * (1 + boost))}</span></div>
+      <div class="stat"><span class="sl">+ VIP &amp; Boost</span><span class="sv">${compact(r.xp * (1 + vip + boost))}</span></div>
+    </div>` : "";
+
+  $("raidInfo").innerHTML = `
+    <h2 class="sectitle">Boss Raids</h2>
+    <p class="help" style="margin:0 0 10px">Also in the table above as its own row, under a "Tier 30" column since raids run on a different ladder than dungeon difficulties. The rest of what's known:</p>
+    <p class="help"><b>Unlocks at level ${r.levelReq}</b> — ${r.tier}.</p>
+    <p class="help"><b>EXP only counts up to level ${r.xpCapLevel}.</b> Past that, raid clears stop granting level-up EXP, so it isn't possible to skip the regular dungeons by grinding raids alone. — ${r.source}</p>
+    <p class="help">${r.tierNote}</p>
+    <p class="help" style="margin-top:10px">${xpLine}</p>
+    ${strip}
+  `;
+}
+buildRaidInfo();
 
 /* ============================================================
    CALCULATOR

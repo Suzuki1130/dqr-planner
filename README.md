@@ -1,7 +1,7 @@
 # DQR Toolkit
 
 A one-page site for Dungeon Quest Reborn: a dungeon run calculator and a table of every
-dungeon's base EXP value (not including boss raids).
+dungeon's base EXP value, including Boss Raid.
 No build step, no framework, no server — one `index.html` file.
 
 ## Put it online (GitHub Pages)
@@ -60,6 +60,25 @@ takes its accent from whichever one is selected. A name that isn't in the list f
 
 **Change the level curve:** the `xpForLevel` line. It's 84 EXP for level 1, rising 13% each
 level — `84 × 1.13^(lvl−1)`.
+
+**Boss raid info:** raids run on a different tier ladder than dungeon difficulties, but the raid
+shows up in `DUNGEONS` as its own row too (a "Boss Raid (Lvl 130)" entry with a single "Tier 30"
+column) — the row reads its EXP from `BOSS_RAID.xp`, so editing `BOSS_RAID` updates both the
+table row and the extra info panel below it at once. `BOSS_RAID` is declared *above* `DUNGEONS`
+in the file since the row references it — keep it there, or the row will throw a
+"can't access before initialization" error. Set `xp` to `null` if a value ever needs pulling
+back out (the panel and the table row both show *no XP yet* while it's `null`).
+
+```js
+const BOSS_RAID = {
+  levelReq: 130,
+  tier: "Tier 30 only",
+  xpCapLevel: 145,
+  xp: 130000000,   /* same EXP for every tier, confirmed via the in-game EXP Earnings panel */
+  tierNote: "...",
+  source: "Orange, DQR's administrator"
+};
+```
 
 ## How the maths works
 
