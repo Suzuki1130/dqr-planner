@@ -377,9 +377,7 @@ footer b{color:var(--ink);font-weight:600}
 </div>
 
 <script>
-/* ============================================================
-   DATA — edit these two blocks to change the calculator
-   ============================================================ */
+
 
 /* Base EXP for one full clear, no boosts applied. */
 const DUNGEONS = [
@@ -397,13 +395,14 @@ const DUNGEONS = [
   { name:"Ghastly Harbor",     runs:{ Insane:12840000, Nightmare:24160000 } },
   { name:"Steampunk Sewers",   runs:{ Insane:35700000, Nightmare:59600000 } },
   { name:"Orbital Outpost",    runs:{ Insane:329000000, Nightmare:730980000 } },
-  { name:"Volcanic Chambers",  runs:{ Insane:755000000, Nightmare:1225000000 } },
-  { name:"Aquatic Temple",     runs:{ Insane:2034000000, Nightmare:3564000000 } },
-  { name:"Enchanted Forest",   runs:{ Insane:6900000000, Nightmare:11280000000 } },
+  { name:"Volcanic Chambers",  runs:{ Insane:1,050,000,000, Nightmare:1,720,000,000 } }, /*VC TO EF NM EXP IS DIFFERENT IN DQR, so the new ones are these solo(10% extra gain) HC */
+  { name:"Aquatic Temple",     runs:{ Insane:2,850,000,000, Nightmare:4,990,000,000 } },
+  { name:"Enchanted Forest",   runs:{ Insane:9,660,000,000, Nightmare:15,790,000,000 } },
   { name:"Northern Lands",     runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } },
   { name:"Gilded Skies(Soon)",       runs:{ Insane:63500000000, Nightmare:115500000000 } },
   { name:"Yokai Peak(?)",         runs:{ Insane:192650000000, Nightmare:350950000000 } }
 ];
+  <p><b>EXP FROM VC TO EF ARE CORRECT EXP <p>
 
 /* Boosts add to a base of 1. 0.2 means +20%.
    Anything sharing a "group" can only have one picked at a time. */
