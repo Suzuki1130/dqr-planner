@@ -546,10 +546,11 @@ function buildRaidInfo(){
     </div>` : "";
 
   const pendingBadge = r.pending ? '<span class="pending">checking</span>' : "";
+  const pendingLine = r.pending ? " Everything below is still being double-checked." : "";
 
   $("raidInfo").innerHTML = `
     <h2 class="sectitle">Boss Raids${pendingBadge}</h2>
-    <p class="help" style="margin:0 0 10px">Also in the table above as its own row, under a "Tier 30" column since raids run on a different ladder than dungeon difficulties. Everything below is still being double-checked, so treat it as a starting point rather than confirmed. What's known so far:</p>
+    <p class="help" style="margin:0 0 10px">Also in the table above as its own row, under a "Tier 30" column since raids run on a different ladder than dungeon difficulties.${pendingLine} What's known so far:</p>
     <p class="help"><b>Unlocks at level ${r.levelReq}</b> — ${r.tier}.</p>
     <p class="help"><b>EXP only counts up to level ${r.xpCapLevel}.</b> Past that, raid clears stop granting level-up EXP, so it isn't possible to skip the regular dungeons by grinding raids alone. — ${r.source}</p>
     <p class="help">${r.tierNote}</p>
@@ -673,7 +674,6 @@ function timeText(mins){
   return `${m}m`;
 }
 
-let lastRuns = null;
 function showBig(text, isMessage){
   const el = $("runs");
   el.classList.toggle("msg", !!isMessage);
