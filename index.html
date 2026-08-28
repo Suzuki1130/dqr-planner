@@ -188,6 +188,8 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .pill:hover{border-color:#3a4667;color:var(--ink)}
 .pill[aria-pressed="true"]{background:rgba(var(--tier-rgb),.14);border-color:var(--tier);color:var(--ink)}
 .pill[aria-pressed="true"] b{color:var(--tier)}
+.pill[data-excluded="true"]{opacity:.35;cursor:not-allowed}
+.pill[data-excluded="true"]:hover{border-color:var(--edge);color:var(--dim)}
 
 
 /* ============================================================
@@ -353,6 +355,7 @@ const BOSS_RAID = {
   xpCapLevel: 145,
   xp: 130000000,   /* EXP per clear, unboosted — confirmed via the in-game EXP Earnings panel */
   tierNote: "Tiers 1–30 give the same EXP — confirmed by the in-game EXP Earnings panel. Higher tiers give better loot, not more EXP.",
+  excludeBoosts: ["hc"],   /* Boss Raid has no Hardcore mode, per the old wiki's Boss Raid (Legacy) page */
   source: "Orange, DQR's administrator"
 };
 
@@ -374,7 +377,7 @@ const DUNGEONS = [
      Earnings panel. See the Boss Raids panel below the table for the rest
      of what's known (level cap, tier/loot note, etc.) — BOSS_RAID up above
      is the source for this row too, so they can't drift out of sync. */
-  { name:"Boss Raid (Lvl 130)", runs:{ "Tier 30":BOSS_RAID.xp } },
+  { name:"Boss Raid (Lvl 130)", excludeBoosts:BOSS_RAID.excludeBoosts, runs:{ "Tier 30":BOSS_RAID.xp } },
   /* OO -> EF: re-checked running Solo + HC + VIP and confirmed against the
      raw values reported back, so the `pending` flags are all cleared. Add
      `pending:true` to an entry again if a dungeon needs another recheck —
@@ -525,6 +528,11 @@ function buildRaidInfo(){
     ? `<span class="val set" style="font-family:var(--mono)">${compact(r.xp)}</span> EXP per clear, same for every tier.`
     : `<span class="pending">no XP yet</span> — EXP per clear hasn't been logged yet.`;
 
+  const excludedNames = (r.excludeBoosts || []).map(id => BOOSTS.find(b => b.id === id)?.name || id);
+  const noBoostLine = excludedNames.length
+    ? `<p class="help"><b>No ${excludedNames.join(" / ")}.</b> Boss Raid doesn't support that mode, so it's greyed out and locked off on the Run Calculator when Boss Raid is selected — following the old wiki's Boss Raid (Legacy) page. VIP, Solo, EXP Boost and events still apply normally.</p>`
+    : "";
+
   const strip = r.xp ? `
     <div class="strip" style="border-top:1px solid var(--edge);padding-top:14px;margin-top:14px">
       <div class="stat"><span class="sl">Base</span><span class="sv">${compact(r.xp)}</span></div>
@@ -539,6 +547,7 @@ function buildRaidInfo(){
     <p class="help"><b>Unlocks at level ${r.levelReq}</b> — ${r.tier}.</p>
     <p class="help"><b>EXP only counts up to level ${r.xpCapLevel}.</b> Past that, raid clears stop granting level-up EXP, so it isn't possible to skip the regular dungeons by grinding raids alone. — ${r.source}</p>
     <p class="help">${r.tierNote}</p>
+    ${noBoostLine}
     <p class="help" style="margin-top:10px">${xpLine}</p>
     ${strip}
   `;
@@ -564,6 +573,7 @@ BOOSTS.forEach(b => {
   btn.setAttribute("aria-pressed","false");
   btn.innerHTML = `<span>${b.name}</span><b>+${Math.round(b.add*100)}%</b>`;
   btn.addEventListener("click", () => {
+    if(btn.dataset.excluded === "true") return;
     const on = btn.getAttribute("aria-pressed") === "true";
     btn.setAttribute("aria-pressed", String(!on));
     if(!on && b.group){
@@ -577,9 +587,23 @@ BOOSTS.forEach(b => {
 });
 const boostOn = id => $("b-"+id).getAttribute("aria-pressed") === "true";
 
+/* Some dungeons (Boss Raid has no Hardcore mode) can't use every boost —
+   grey out and lock the pill instead of letting it get toggled on. */
+function updateBoostAvailability(d){
+  const excluded = new Set(d.excludeBoosts || []);
+  BOOSTS.forEach(b => {
+    const btn = $("b-"+b.id);
+    const isExcluded = excluded.has(b.id);
+    btn.dataset.excluded = String(isExcluded);
+    btn.title = isExcluded ? `${d.name} doesn't support ${b.name}.` : "";
+    if(isExcluded) btn.setAttribute("aria-pressed","false");
+  });
+}
+
 /* difficulty ladder */
 function buildTiers(keep){
   const d = DUNGEONS[+dungeonSel.value];
+  updateBoostAvailability(d);
   const keys = Object.keys(d.runs);
   curDiff = keep && keys.includes(keep) ? keep : keys[keys.length - 1];
   const box = $("tiers");
@@ -749,7 +773,7 @@ dungeonSel.addEventListener("change", () => { buildTiers(curDiff); calculate(); 
     if(s.mins) $("minutes").value = s.mins;
     (s.b || []).forEach(id => {
       const el = $("b-" + (id === "potion" ? "expboost" : id));   /* old saves called it potion */
-      if(el) el.setAttribute("aria-pressed","true");
+      if(el && el.dataset.excluded !== "true") el.setAttribute("aria-pressed","true");
     });
   } else {
     buildTiers();

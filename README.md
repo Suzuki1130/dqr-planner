@@ -76,9 +76,16 @@ const BOSS_RAID = {
   xpCapLevel: 145,
   xp: 130000000,   /* same EXP for every tier, confirmed via the in-game EXP Earnings panel */
   tierNote: "...",
+  excludeBoosts: ["hc"],   /* boost ids this dungeon can't use */
   source: "Orange, DQR's administrator"
 };
 ```
+
+**Locking a boost out for a specific dungeon:** add `excludeBoosts:["id", ...]` (boost ids from
+`BOOSTS`) to any `DUNGEONS` entry and the Run Calculator greys out and locks off that boost's
+pill whenever that dungeon is selected — it can't be toggled on, and switching away un-greys it
+again. Boss Raid uses this for `hc`, since it has no Hardcore mode (per the old wiki's Boss Raid
+(Legacy) page — the in-game name stays "Boss Raid", no "(Legacy)" tag).
 
 ## How the maths works
 
