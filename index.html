@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DQR Toolkit — run calculator & dungeon EXP values</title>
 <meta name="description" content="Work out how many dungeon clears you need in Dungeon Quest Reborn, and look up every dungeon's base EXP. Everything is saved on your own device.">
 <meta name="theme-color" content="#0a0e15">
@@ -57,7 +57,7 @@ body{
   -webkit-text-size-adjust:100%;
   font-synthesis:none; /* no fake-bold while the real weight loads */
 }
-.wrap{max-width:1060px;margin:0 auto;padding:0 var(--pad) 72px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 var(--pad) calc(72px + env(safe-area-inset-bottom))}
 button,input,select{font-family:inherit;font-size:16px}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--tier);outline-offset:2px}
@@ -107,7 +107,9 @@ input[type=text],input[type=number],select{
   border:1px solid var(--edge);border-radius:var(--r);padding:12px;font-weight:500;
 }
 input[type=text]:hover,input[type=number]:hover,select:hover{border-color:#3a4667}
-input[type=number],#haveXp{font-family:var(--mono);font-weight:700}
+input[type=number],#haveXp,#minutes{font-family:var(--mono);font-weight:700}
+.parsed-echo{display:block;font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:6px;min-height:1.2em}
+.parsed-echo.bad{color:var(--nightmare)}
 select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%);background-position:calc(100% - 18px) 21px,calc(100% - 13px) 21px;background-size:5px 5px;background-repeat:no-repeat;padding-right:38px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{
@@ -200,7 +202,26 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
    5. ALL DUNGEONS EXP VALUES
    ============================================================ */
 .sectitle{margin:0 0 4px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.03em;color:var(--ink)}
-.expTableWrap{margin-top:14px;overflow-x:auto}
+.expTableWrap{margin-top:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  background:linear-gradient(to left,rgba(10,14,21,.92),rgba(10,14,21,0)) right/26px 100% no-repeat}
+
+/* under 640px the Accuracy column used to sit off-screen with no hint it was
+   there. stack each row into a labelled card instead of scrolling sideways. */
+@media(max-width:640px){
+  .expTableWrap{overflow-x:visible;background:none}
+  .expTableWrap table.expTable,.expTableWrap tbody,.expTableWrap tr,.expTableWrap td{display:block;width:100%}
+  .expTableWrap thead{display:none}
+  .expTableWrap table.expTable{white-space:normal}
+  .expTableWrap tr{border:1px solid var(--edge);border-radius:var(--r);padding:11px 13px;margin-bottom:10px}
+  .expTableWrap tr:hover{background:none}
+  .expTableWrap td{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+    padding:5px 0;border-bottom:0;text-align:right}
+  .expTableWrap td::before{content:attr(data-label);flex:0 0 auto;text-align:left;
+    font-family:var(--display);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .expTableWrap td.dname{display:block;text-align:left;min-width:0;font-size:14.5px;
+    padding:0 0 9px;margin-bottom:5px;border-bottom:1px solid var(--edge-soft)}
+  .expTableWrap td.dname::before{display:none}
+}
 table.expTable{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
 table.expTable th,table.expTable td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--edge-soft)}
 table.expTable thead th{
@@ -297,8 +318,10 @@ footer b{color:var(--ink);font-weight:600}
 
       <div class="field">
         <label class="flabel" for="haveXp">EXP you already have on this level</label>
-        <input type="text" id="haveXp" inputmode="decimal" value="0" placeholder="0" autocomplete="off">
-        <p class="help">Short amounts work: <b>1K</b>, <b>2.5M</b>, <b>1B</b>, <b>1T</b>.</p>
+        <input type="text" id="haveXp" inputmode="text" value="0" placeholder="e.g. 1.5B"
+               autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <span class="parsed-echo" id="haveXpEcho"></span>
+        <p class="help">Short amounts work: <b>1K</b>, <b>2.5M</b>, <b>1B</b>, <b>1T</b>, <b>1Qa</b>.</p>
       </div>
 
       <div class="field">
@@ -309,7 +332,7 @@ footer b{color:var(--ink);font-weight:600}
 
       <div class="field">
         <label class="flabel" for="minutes">Minutes a run <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="number" id="minutes" min="0" step="0.5" placeholder="e.g. 4">
+        <input type="text" id="minutes" inputmode="decimal" placeholder="e.g. 4" autocomplete="off">
         <p class="help">Fill this in and you get a rough grind time.</p>
       </div>
     </div>
@@ -322,7 +345,7 @@ footer b{color:var(--ink);font-weight:600}
 
   <div class="plate pad">
     <h2 class="sectitle">All Dungeons EXP Values</h2>
-    <p class="help" style="margin:0">Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Pulled live from <a href="https://docs.google.com/spreadsheets/d/1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs/edit?gid=0#gid=0" target="_blank" rel="noopener">this spreadsheet</a> — I will edit it and both this table and the Run Calculator update, I don't have to do site update for it. Boss Raid is in here too, under its own "Tier 30" column — see the panel below the table for the rest of what's known about it. Rows marked <span class="pending">checking</span> are being re-verified running Solo + HC + VIP — the numbers may still be off until that's done. Rows marked <span class="watch">watch</span> have a note flagged on the live spreadsheet — hover the row, or see below the table.</p>
+    <p class="help" style="margin:0">Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Pulled live from <a href="https://docs.google.com/spreadsheets/d/1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs/edit?gid=0#gid=0" target="_blank" rel="noopener">this spreadsheet</a> — edit it and both this table and the Run Calculator update, no site update needed. Boss Raid is in here too, under its own "Tier 30" column — see the panel below the table for the rest of what's known about it. Rows marked <span class="pending">checking</span> are being re-verified running Solo + HC + VIP — the numbers may still be off until that's done. Rows marked <span class="watch">watch</span> have a note flagged on the live spreadsheet — hover the row, or see below the table.</p>
   </div>
 
   <div class="plate pad" id="expLiveStatus" style="margin-top:14px"></div>
@@ -345,7 +368,7 @@ footer b{color:var(--ink);font-weight:600}
 
   <div class="plate pad">
     <h2 class="sectitle">Gamepass Prices &amp; Farming Rates</h2>
-    <p class="help" style="margin:0">Gamepass cost per dungeon and roughly how much it farms AFK over 1, 2 and 4 hours. Pulled live from <a href="https://docs.google.com/spreadsheets/d/1AoM7H3rLFCa_vtBXQfYhWOFiArUZdcavHCibNfZwkGo/edit?gid=0#gid=0" target="_blank" rel="noopener">Harry's tracking spreadsheet</a> —I will edit that sheet and this table updates for everyone, no site update needed. Data from multiple players — credit to them for it.</p>
+    <p class="help" style="margin:0">Gamepass cost per dungeon and roughly how much it farms AFK over 1, 2 and 4 hours. Pulled live from <a href="https://docs.google.com/spreadsheets/d/1AoM7H3rLFCa_vtBXQfYhWOFiArUZdcavHCibNfZwkGo/edit?gid=0#gid=0" target="_blank" rel="noopener">Harry's tracking spreadsheet</a> — edit that sheet and this table updates for everyone, no site update needed. Data from multiple players — credit to them for it.</p>
   </div>
 
   <div class="plate pad" id="pricesStatus" style="margin-top:14px"></div>
@@ -427,9 +450,9 @@ let DUNGEONS = [
   { name:"Aquatic Temple",     abbr:"AT", runs:{ Insane:2036000000, Nightmare:3564000000 } },
   { name:"Enchanted Forest",   abbr:"EF", runs:{ Insane:6900000000, Nightmare:11280000000 } },
   { name:"Northern Lands",     abbr:"NL",
-                                runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } }, /* Rechecking */
-  { name:"Gilded Skies",       abbr:"GS", runs:{ Insane:63500000000, Nightmare:115500000000 } }, /* Soon */
-  { name:"Yokai Peak",         abbr:"YP", runs:{ Insane:192650000000, Nightmare:350950000000 } } /* Soon */
+                                runs:{ Insane:21820000000, Nightmare:36600000000, "Nightmare + Odin":58600000000 } },
+  { name:"Gilded Skies",       abbr:"GS", runs:{ Insane:63500000000, Nightmare:115500000000 } },
+  { name:"Yokai Peak",         abbr:"YP", runs:{ Insane:192650000000, Nightmare:350950000000 } }
 ];
 
 /* Boosts add to a base of 1. 0.2 means +20%.
@@ -537,6 +560,7 @@ function buildExpTable(){
       const td = document.createElement("td");
       const v = d.runs[c];
       td.className = "val " + (v ? "set" : "blank");
+      td.dataset.label = c;
       td.textContent = v ? compact(v) : "—";
       if(v) td.title = fmtVal(v) + " EXP";
       tr.appendChild(td);
@@ -653,6 +677,7 @@ function renderPricesTable(cols, rows, meta){
     r.forEach((cell, i) => {
       const td = document.createElement("td");
       const v = (cell ?? "").toString().trim();
+      td.dataset.label = (cols[i] || "").trim();
       if(i === 0){
         td.className = "dname";
         const full = DUNGEON_ABBR[v];
@@ -951,13 +976,18 @@ function totalXpBetween(from, to){
 }
 
 /* "1K" -> 1000, "2.5m" -> 2500000, "1,240" -> 1240 */
-const SUFFIX = { k:1e3, m:1e6, b:1e9, t:1e12, q:1e15 };
+const SUFFIX = {
+  k:1e3, m:1e6, b:1e9, t:1e12,
+  q:1e15, qa:1e15, qi:1e18, sx:1e21, sp:1e24, oc:1e27, no:1e30, dc:1e33
+};
 function parseAmount(raw){
-  const s = String(raw || "").trim().toLowerCase().replace(/[, ]/g,"");
+  const s = String(raw || "").trim().toLowerCase().replace(/[,\s_]/g,"");
   if(!s) return 0;
-  const m = s.match(/^(\d*\.?\d+)([kmbtq]?)$/);
+  const m = s.match(/^(\d*\.?\d+)([a-z]*)$/);
   if(!m) return NaN;
-  return parseFloat(m[1]) * (SUFFIX[m[2]] || 1);
+  const suf = m[2];
+  if(suf && !(suf in SUFFIX)) return NaN;   /* "1x" is a typo, not 1 */
+  return parseFloat(m[1]) * (suf ? SUFFIX[suf] : 1);
 }
 
 const plural = n => n.toLocaleString() + (n === 1 ? " run" : " runs");
@@ -988,6 +1018,12 @@ function calculate(){
   const have = bad ? 0 : Math.max(0, haveRaw);
   const mins = Math.max(0, +$("minutes").value || 0);
   $("haveXp").style.borderColor = bad ? "var(--nightmare)" : "";
+
+  const echo = $("haveXpEcho");
+  const typed = $("haveXp").value.trim();
+  if(!typed){ echo.textContent = ""; echo.classList.remove("bad"); }
+  else if(bad){ echo.textContent = "not a number"; echo.classList.add("bad"); }
+  else { echo.textContent = "= " + Math.max(0, haveRaw).toLocaleString() + " EXP"; echo.classList.remove("bad"); }
 
   /* multiplier */
   let mult = 1;
