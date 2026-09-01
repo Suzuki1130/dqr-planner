@@ -1,4 +1,4 @@
-const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Odin","Tier 30"];
+const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Rodin","Tier 30"];
 
 function buildExpTable(){
   const cols = DIFF_ORDER.filter(k => DUNGEONS.some(d => k in d.runs));
@@ -97,7 +97,7 @@ function parseExpCell(v){
 function normaliseColumnKey(raw){
   const key = (raw || "").trim();
   if(key === "T1~T30") return "Tier 30";
-  if(/nightmare.*(rodin|odin)/i.test(key)) return "Nightmare + Odin";
+  if(/nightmare.*(rodin|odin)/i.test(key)) return "Nightmare + Rodin";
   return key;
 }
 
