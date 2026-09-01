@@ -24,7 +24,7 @@ let DUNGEONS = [
   { name:"Aquatic Temple",     abbr:"AT", runs:{ Insane:2036000000, Nightmare:3564000000 } },
   { name:"Enchanted Forest",   abbr:"EF", runs:{ Insane:6900000000, Nightmare:11280000000 } },
   { name:"Northern Lands",     abbr:"NL",
-                                runs:{ Insane:19154000000, Nightmare:38100000000, "Nightmare + Odin":58600000000 } }, //waiting for odin release on september 5th, will change later,
+                                runs:{ Insane:19154000000, Nightmare:38100000000, "Nightmare + Rodin":58600000000 } }, //waiting for rodin release on september 5th, will change later,
   { name:"Gilded Skies",       abbr:"GS", runs:{ Insane:63500000000, Nightmare:115500000000 } }, // waiting for gs to come out, will change later
   { name:"Yokai Peak",         abbr:"YP", runs:{ Insane:192650000000, Nightmare:350950000000 } }, // ehh idk about this one but ill add it just in case
   { name:"Abyssal Void",       abbr:"AV", runs:{ Insane:1070000000000, Nightmare: 1470000000000} } // This follows the old dq wiki page value, but i will update once new values are released
