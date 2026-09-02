@@ -30,8 +30,17 @@
   <p class="tagline">How many clears until your next level, and every dungeon's base EXP. Saved on this device, nothing uploaded(Trust Me, Also Please Look At The Very Bottom Part Of The Website To Let You Know That This Was Also Made With The Help Of Claude AI).</p>
   <nav class="switch" role="tablist" aria-label="Sections">
     <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Run calculator</button>
-    <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">All Dungeons EXP</button>
-    <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Prices &amp; Farming Rates</button>
+    <button id="tab-pot" role="tab" aria-controls="view-pot" aria-selected="false">Pot Calculator</button>
+    <div class="switch-more" id="switchMore">
+      <button id="tab-more" type="button" aria-haspopup="true" aria-expanded="false" aria-selected="false">
+        <span>More</span>
+        <svg class="chev" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="switch-more-menu" id="moreMenu" hidden>
+        <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">All Dungeons EXP</button>
+        <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Prices &amp; Farming Rates</button>
+      </div>
+    </div>
   </nav>
 </header>
 
@@ -99,6 +108,48 @@
         <label class="flabel" for="minutes">Minutes a run <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
         <input type="text" id="minutes" inputmode="decimal" placeholder="e.g. 4" autocomplete="off">
         <p class="help">Fill this in and you get a rough grind time(So you know how long it'll take)</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="view" id="view-pot" role="tabpanel" aria-labelledby="tab-pot" hidden>
+  <div class="calc">
+
+    <div class="readout-wrap">
+      <div class="readout">
+        <div class="readout-in">
+          <div class="eyebrow">Max pot</div>
+          <div class="bignum" id="potResult">—</div>
+          <div class="target" id="potSub"></div>
+          <div class="strip">
+            <div class="stat"><span class="sl">Formula</span><span class="sv" id="potFormula">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="breakdown plate" id="potBreakdown"></div>
+    </div>
+
+    <div class="controls plate pad">
+      <div class="field">
+        <span class="flabel">Pot type</span>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">i</span>
+          <span>Kept as two separate tabs because the formulas only agree once your pot hits 200 &mdash; below that, combining them would throw off Current Dungeon's numbers/Pots.</span>
+        </div>
+        <div class="tiers" id="potModes"></div>
+        <p class="help" id="potModeHelp"></p>
+      </div>
+
+      <div class="field">
+        <label class="flabel" for="potCurrent">Current pot</label>
+        <input type="number" id="potCurrent" min="0" step="1" value="1">
+      </div>
+
+      <div class="field">
+        <label class="flabel" for="potUpgrades">Upgrades</label>
+        <input type="number" id="potUpgrades" min="0" step="1" value="0">
       </div>
     </div>
 
@@ -173,6 +224,7 @@
 <script src="js/dungeons-table.js"></script>
 <script src="js/prices-table.js"></script>
 <script src="js/calculator.js"></script>
+<script src="js/pot-calculator.js"></script>
 <script src="js/main.js"></script>
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a254fb5b07f3410ab2b9701c3eeaa2c1"}'></script>
 </body>
