@@ -50,30 +50,34 @@ function calculatePot(){
   $("potModeHelp").textContent = mode.note;
 
   const start = Math.floor(+$("potCurrent").value);
-  const upgrades = Math.floor(+$("potUpgrades").value);
-  const bad = isNaN(start) || isNaN(upgrades) || start < 0 || upgrades < 0;
+  const total = Math.floor(+$("potUpgrades").value);
+  const done = Math.floor(+$("potUpgradesDone").value);
+  const bad = isNaN(start) || isNaN(total) || isNaN(done) || start < 0 || total < 0 || done < 0;
 
   $("potCurrent").style.borderColor = bad ? "var(--nightmare)" : "";
   $("potUpgrades").style.borderColor = bad ? "var(--nightmare)" : "";
+  $("potUpgradesDone").style.borderColor = bad ? "var(--nightmare)" : "";
 
   if(bad){
-    showPotResult("Enter a current pot and upgrade count of 0 or more", true);
+    showPotResult("Enter a current pot and upgrade counts of 0 or more", true);
     $("potSub").textContent = "";
     $("potFormula").textContent = "—";
     return;
   }
 
-  const result = curPotMode === "gear" ? gearPot(start, upgrades) : dungeonPot(start, upgrades);
+  // only the upgrades left matter, done ones are already baked into current pot
+  const left = Math.max(0, total - done);
+  const result = curPotMode === "gear" ? gearPot(start, left) : dungeonPot(start, left);
   showPotResult(compact(result), false);
-  $("potSub").textContent = `${mode.name} · ${start.toLocaleString()} pot + ${upgrades.toLocaleString()} upgrades`;
+  $("potSub").textContent = `${mode.name} · ${start.toLocaleString()} pot + ${left.toLocaleString()} upgrades left (${done.toLocaleString()}/${total.toLocaleString()} done)`;
   $("potFormula").textContent = curPotMode === "gear"
     ? "S += min(10, ⌊S/20⌋)"
     : "upgrades × 10 + pot";
 
-  store.set(KEY_POT, JSON.stringify({ mode: curPotMode, start, upgrades }));
+  store.set(KEY_POT, JSON.stringify({ mode: curPotMode, start, total, done }));
 }
 
-["potCurrent","potUpgrades"].forEach(id => $(id).addEventListener("input", calculatePot));
+["potCurrent","potUpgrades","potUpgradesDone"].forEach(id => $(id).addEventListener("input", calculatePot));
 
 (function restorePot(){
   let s = null;
@@ -82,7 +86,8 @@ function calculatePot(){
     curPotMode = s.mode;
     [...$("potModes").children].forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === s.mode)));
     $("potCurrent").value = s.start;
-    $("potUpgrades").value = s.upgrades;
+    $("potUpgrades").value = s.total ?? s.upgrades ?? 0;
+    $("potUpgradesDone").value = s.done ?? 0;
   }
   calculatePot();
 })();
