@@ -26,12 +26,12 @@ const hexRgb = h => {
   const n = parseInt(h.replace("#",""), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
 };
-const tierColour = k => TIER_COLOUR[String(k).toLowerCase()] || "#59b1f2";
+const tierColour = k => TIER_COLOUR[String(k).toLowerCase()] || "#5b93ba";
 function paint(colour){
   document.documentElement.style.setProperty("--tier", colour);
   document.documentElement.style.setProperty("--tier-rgb", hexRgb(colour));
   const m = document.querySelector('meta[name=theme-color]');
-  if(m) m.setAttribute("content", "#09090b");
+  if(m) m.setAttribute("content", "#1d1d1b");
 }
 
 function compact(n){
