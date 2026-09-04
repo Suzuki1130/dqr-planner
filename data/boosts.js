@@ -10,8 +10,8 @@ const BOOSTS = [
 const xpForLevel = n => Math.round(84 * Math.pow(1.13, n - 1)); //Formula for exp level
 
 const TIER_COLOUR = {
-  "easy":"#5fd18c", "medium":"#59b1f2", "hard":"#a880f5",
-  "insane":"#ff9a3c", "nightmare":"#ff5f6d", "nightmare + rodin":"#ffcf5c"
+  "easy":"#6ba97a", "medium":"#5b93ba", "hard":"#9483b0",
+  "insane":"#ea7c2f", "nightmare":"#c2685f", "nightmare + rodin":"#c7a352"
 };
 // ev 2 and ev15 CANNOT STACK
 // pretty sure there is a 1.5x exp event.
