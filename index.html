@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DQR Toolkit — Dungeon Quest Reborn Calculator</title>
+<meta name="description" content="Work out how many dungeon clears you need in Dungeon Quest Reborn, browse every dungeon's base EXP, compare farming rates and plan your pot. Everything is saved on your own device.">
+<meta property="og:title" content="DQR Toolkit">
+<meta property="og:description" content="Run calculator, dungeon EXP database, farming rates and pot calculator for Dungeon Quest Reborn.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://suzuki1130.github.io/dqr-planner/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DQR Toolkit">
+<meta name="twitter:description" content="Run calculator, dungeon EXP database, farming rates and pot calculator for Dungeon Quest Reborn.">
+<meta name="theme-color" content="#181816">
+<link rel="icon" type="image/svg+xml" href="images/favicon-32.svg">
+<link rel="icon" type="image/svg" sizes="32x32" href="images/favicon-32.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site-header">
+  <div class="header-bar">
+    <div class="brand"><span class="accent">DQR</span><span class="full">Toolkit</span></div>
+    <div class="nav-scroll">
+      <nav class="primary-nav" role="tablist" aria-label="Sections" id="primaryNav">
+        <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Calculator</button>
+        <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">Dungeons</button>
+        <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Farming</button>
+        <button id="tab-pot" role="tab" aria-controls="view-pot" aria-selected="false">Pots</button>
+        <button id="tab-about" role="tab" aria-controls="view-about" aria-selected="false">About</button>
+      </nav>
+      <span class="nav-fade nav-fade-l" id="navFadeL" aria-hidden="true"></span>
+      <span class="nav-fade nav-fade-r" id="navFadeR" aria-hidden="true"></span>
+    </div>
+  </div>
+</header>
+
+<section class="view" id="view-calc" role="tabpanel" aria-labelledby="tab-calc">
+
+  <div class="hero">
+    <p class="eyebrow">DQR Toolkit</p>
+    <h1>Run calculator</h1>
+    <p>Figure out how many dungeon clears stand between you and your next level.</p>
+  </div>
+
+  <div class="calc">
+
+    <div class="readout-wrap">
+      <div class="readout glass">
+        <div class="readout-in">
+          <p class="eyebrow" id="runsEyebrow">Result</p>
+          <div class="bignum" id="runs"><span class="num">—</span><span class="unit">Runs required</span></div>
+          <div class="target" id="runsSub"></div>
+          <div class="strip">
+            <div class="stat"><span class="sl">Multiplier</span><span class="sv" id="rMult">1.00x</span></div>
+            <div class="stat"><span class="sl">EXP per run</span><span class="sv" id="rEff">—</span></div>
+            <div class="stat"><span class="sl">EXP remaining</span><span class="sv" id="rTotal">—</span></div>
+            <div class="stat" id="statTime" hidden><span class="sl">Time</span><span class="sv" id="rTime">—</span></div>
+          </div>
+        </div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+    </div>
+
+    <div class="controls plate pad">
+
+      <div class="group">
+        <p class="group-label">Current progress</p>
+        <div class="field">
+          <label class="minilabel" for="fromLvl">Current level</label>
+          <input type="number" id="fromLvl" min="1" max="299" value="1">
+        </div>
+        <div class="field">
+          <label class="flabel" for="haveXp">Current EXP toward this level-up <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+          <input type="text" id="haveXp" inputmode="text" value="0" placeholder="e.g. 1.5B"
+                 autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <span class="parsed-echo" id="haveXpEcho"></span>
+          <p class="help">Shorthand works: <b>1K</b>, <b>2.5M</b>, <b>1B</b>, <b>1T</b>, <b>1Qa</b>.</p>
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Target</p>
+        <div class="field">
+          <label class="minilabel" for="toLvl">Target level</label>
+          <input type="number" id="toLvl" min="2" max="300" value="50">
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Dungeon</p>
+        <div class="field">
+          <label class="flabel" for="dungeon">Dungeon</label>
+          <select id="dungeon"></select>
+        </div>
+        <div class="field">
+          <span class="flabel">Difficulty</span>
+          <div class="tiers" id="tiers"></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Boosts</p>
+        <div class="field">
+          <div class="pills" id="boosts"></div>
+          <p class="help">Boosts add up, they don't multiply. VIP + Solo + HC + EXP Boost is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;0.1&nbsp;+&nbsp;0.1&nbsp;+&nbsp;1 = <b>2.4x</b>, not something you'd get by multiplying them together. The two events can&rsquo;t run at once.</p>
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Session length <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></p>
+        <div class="field">
+          <label class="minilabel" for="minutes">Minutes per run</label>
+          <input type="text" id="minutes" inputmode="decimal" placeholder="e.g. 4" autocomplete="off">
+          <p class="help">Fill this in to get a rough grind time alongside your run count.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="view" id="view-list" role="tabpanel" aria-labelledby="tab-list" hidden>
+
+  <div class="view-head">
+    <p class="eyebrow">Database</p>
+    <h1>All Dungeons EXP</h1>
+    <p>Base EXP per full clear, before any boosts (VIP, Solo, HC, EXP Boost, events). Pulled live from <a href="https://docs.google.com/spreadsheets/d/1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs/edit?gid=0#gid=0" target="_blank" rel="noopener">the tracking spreadsheet</a>. Boss Raid sits in its own "Tier 30" column — see the panel below the table for what's known about it. Rows marked <span class="pending">checking</span> are being re-verified; rows marked <span class="watch">watch</span> have a note flagged on the sheet.</p>
+  </div>
+
+  <div class="plate pad" id="expLiveStatus" style="margin-top:16px"></div>
+
+  <div class="plate pad" style="margin-top:14px">
+    <div class="table-toolbar">
+      <div class="search-field">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="expSearch" placeholder="Search dungeons…" autocomplete="off">
+        <button type="button" class="clear" id="expSearchClear" hidden aria-label="Clear search">✕</button>
+      </div>
+      <span class="result-count" id="expCount"></span>
+    </div>
+    <div class="tableWrap" id="expTableWrap">
+      <table class="dataTable" id="expTable">
+        <thead><tr id="expHead"></tr></thead>
+        <tbody id="expBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="expNotes" id="expNotes" style="margin-top:14px"></div>
+
+  <div class="plate pad" id="raidInfo" style="margin-top:16px"></div>
+
+</section>
+
+<section class="view" id="view-prices" role="tabpanel" aria-labelledby="tab-prices" hidden>
+
+  <div class="view-head">
+    <p class="eyebrow">Database</p>
+    <h1>Farming &amp; gamepass prices</h1>
+    <p>Gamepass cost per dungeon, and roughly how much it farms AFK over 1, 2 and 4 hours. Pulled live from <a href="https://docs.google.com/spreadsheets/d/1AoM7H3rLFCa_vtBXQfYhWOFiArUZdcavHCibNfZwkGo/edit?gid=0#gid=0" target="_blank" rel="noopener">the tracking spreadsheet</a>. Click a column header to sort and compare.</p>
+  </div>
+
+  <div class="plate pad" id="pricesStatus" style="margin-top:16px"></div>
+
+  <div class="plate pad" style="margin-top:14px">
+    <div class="table-toolbar">
+      <div class="search-field">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="pricesSearch" placeholder="Search dungeons…" autocomplete="off">
+        <button type="button" class="clear" id="pricesSearchClear" hidden aria-label="Clear search">✕</button>
+      </div>
+      <span class="result-count" id="pricesCount"></span>
+    </div>
+    <div class="tableWrap" id="pricesTableWrap">
+      <table class="dataTable" id="pricesTable">
+        <thead><tr id="pricesHead"></tr></thead>
+        <tbody id="pricesBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="plate pad" id="wikiSoon" style="margin-top:16px">
+    <p class="eyebrow" style="margin-bottom:6px">DQR Wiki <span class="pending">soon</span></p>
+    <p class="help" style="margin:0"><b>An official DQR Wiki is in progress with the team.</b> Until that's live, the best sources are the <a href="https://dungeonquestroblox.fandom.com/wiki/Levels" target="_blank" rel="noopener">old Dungeon Quest wiki</a> and <a href="https://docs.google.com/spreadsheets/d/1AoM7H3rLFCa_vtBXQfYhWOFiArUZdcavHCibNfZwkGo/edit?gid=0#gid=0" target="_blank" rel="noopener">this spreadsheet</a>.</p>
+  </div>
+
+</section>
+
+<section class="view" id="view-pot" role="tabpanel" aria-labelledby="tab-pot" hidden>
+
+  <div class="view-head">
+    <p class="eyebrow">DQR Toolkit</p>
+    <h1>Pot calculator</h1>
+    <p>Work out your max pot from your current pot and remaining upgrades.</p>
+  </div>
+
+  <div class="calc">
+
+    <div class="readout-wrap">
+      <div class="readout glass">
+        <div class="readout-in">
+          <p class="eyebrow">Result</p>
+          <div class="bignum" id="potResult"><span class="num">—</span><span class="unit">Max pot</span></div>
+          <div class="target" id="potSub"></div>
+          <div class="strip">
+            <div class="stat"><span class="sl">Formula</span><span class="sv" id="potFormula">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls plate pad">
+      <div class="group">
+        <p class="group-label">Pot type</p>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">i</span>
+          <span>Kept as two separate modes because the formulas only agree once your pot hits 200 &mdash; below that, combining them would throw off the numbers.</span>
+        </div>
+        <div class="tiers" id="potModes"></div>
+        <p class="help" id="potModeHelp"></p>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Your pot</p>
+        <div class="field">
+          <label class="flabel" for="potCurrent">Current pot</label>
+          <input type="number" id="potCurrent" min="0" step="1" value="1">
+        </div>
+        <div class="field">
+          <label class="flabel" for="potUpgrades">Upgrades needed</label>
+          <input type="number" id="potUpgrades" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label class="flabel" for="potUpgradesDone">Already upgraded <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+          <input type="number" id="potUpgradesDone" min="0" step="1" value="0">
+          <p class="help">Only the upgrades you have left count toward your pot &mdash; put what you've already done here so it's not counted twice.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="view" id="view-about" role="tabpanel" aria-labelledby="tab-about" hidden>
+
+  <div class="view-head">
+    <p class="eyebrow">DQR Toolkit</p>
+    <h1>About &amp; credits</h1>
+    <p>A fan-made community toolkit for planning and optimizing your Dungeon Quest Reborn progression.</p>
+  </div>
+
+  <div class="plate pad about-grid" style="margin-top:16px">
+
+    <div class="about-block">
+      <h3>What this is</h3>
+      <p>DQR Toolkit helps you plan dungeon runs — how many clears you need for your next level, every dungeon's base EXP, farming rates, and pot upgrades. It's a fan project, not affiliated with Roblox or the Dungeon Quest Reborn developers.</p>
+      <p>Your calculator settings are stored only in your browser's local storage, on your device. Nothing is uploaded or shared.</p>
+    </div>
+
+    <div class="about-block">
+      <h3>Credits</h3>
+      <ul class="credit-list">
+        <li><span>Creator</span><b>Harry (Roblox: lqqvn)</b></li>
+        <li><span>Approved by</span><b>Curry, Pav, Orange &amp; the moderator team</b></li>
+        <li><span>Design &amp; layout</span><b>lfouWho</b></li>
+        <li><span>EXP verification</span><b>FriedByFluoriide</b></li>
+        <li><span>Web icon</span><b>Harry's cousin</b></li>
+      </ul>
+    </div>
+
+    <div class="about-block">
+      <h3>Data sources</h3>
+      <p>EXP values before Orbital Outpost come from the old <a href="https://dungeonquestroblox.fandom.com/wiki/Levels" target="_blank" rel="noopener">Dungeon Quest wiki</a>. Orbital Outpost through Enchanted Forest were checked in-game running Solo + HC + VIP and dividing the multiplier back out. Everything now lives in a spreadsheet the site reads from directly — see the Dungeons and Farming tabs for the links.</p>
+      <p>Dungeons from Gilded Skies onward aren't confirmed yet and follow older reference values until updated in-game.</p>
+    </div>
+
+    <div class="about-block">
+      <h3>Fan project disclaimer</h3>
+      <p>Reborn is a separate community project, so treat these numbers as a close starting point rather than an official source. An official DQR Wiki is currently being put together with the team — until it's live, this toolkit and the linked spreadsheets are the best reference.</p>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>DQR Toolkit — fan project, not affiliated with Roblox.</span>
+    <span>Made by Harry</span>
+  </footer>
+
+</section>
+
+</div>
+<script src="data/dungeons.js"></script>
+<script src="data/boosts.js"></script>
+<script src="data/price-snapshot.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/dungeons-table.js"></script>
+<script src="js/prices-table.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/pot-calculator.js"></script>
+<script src="js/main.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a254fb5b07f3410ab2b9701c3eeaa2c1"}'></script>
+</body>
+</html>
