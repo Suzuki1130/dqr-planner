@@ -167,4 +167,3 @@ function loadLiveSheet(){
   document.body.appendChild(script);
 }
 loadLiveSheet();
-// Claude did this part

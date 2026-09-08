@@ -1,8 +1,8 @@
 const TABS = [
   ["tab-calc","view-calc"],
+  ["tab-pot","view-pot"],
   ["tab-list","view-list"],
   ["tab-prices","view-prices"],
-  ["tab-pot","view-pot"],
   ["tab-about","view-about"]
 ];
 
@@ -33,4 +33,3 @@ TABS.forEach(([t]) => $(t).addEventListener("click", () => selectTab(t)));
   window.addEventListener("resize", update);
   update();
 })();
-// Claude did this part

@@ -180,4 +180,3 @@ dungeonSel.addEventListener("change", () => { buildTiers(curDiff); calculate(); 
   }
   calculate();
 })();
-// Claude Did This

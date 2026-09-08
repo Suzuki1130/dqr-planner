@@ -81,4 +81,3 @@ function timeText(mins){
   if(h) return `${h}h ${m}m`;
   return `${m}m`;
 }
-// Claude did this part

@@ -275,4 +275,3 @@ function loadLiveExp(){
   script.onerror = bail;
   document.body.appendChild(script);
 }
-// Claude did all of these
