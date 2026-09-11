@@ -46,7 +46,7 @@
   <div class="hero">
     <p class="eyebrow">DQR Toolkit</p>
     <h1>Run calculator</h1>
-    <p>Figure out how many dungeon clears stand between you and your next level.</p>
+    <p>See how many runs you need to level up</p>
   </div>
 
   <div class="calc">
@@ -77,7 +77,7 @@
           <input type="number" id="fromLvl" min="1" max="299" value="1">
         </div>
         <div class="field">
-          <label class="flabel" for="haveXp">Current EXP <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+          <label class="flabel" for="haveXp">Current EXP <span style="text-transform:none;letter-spacing:0;font-weight:500">(Optional)</span></label>
           <input type="text" id="haveXp" inputmode="text" value="0" placeholder="e.g. 1.5B"
                  autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
           <span class="parsed-echo" id="haveXpEcho"></span>
@@ -109,7 +109,8 @@
         <p class="group-label">Boosts</p>
         <div class="field">
           <div class="pills" id="boosts"></div>
-          <p class="help">Boosts add up, they don't multiply. VIP + Solo + HC + EXP Boost is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;0.1&nbsp;+&nbsp;0.1&nbsp;+&nbsp;1 = <b>2.4x</b>, not something you'd get by multiplying them together. The two events can&rsquo;t run at once.</p>
+          <p class="help">There's currently a permanent 2x EXP boost for those people who are under level 180.</p>
+          <p class="help">Boosts add up, they don't multiply. BASE + VIP + Solo + HC + EXP Boost is 1&nbsp;+&nbsp;0.2&nbsp;+&nbsp;0.1&nbsp;+&nbsp;0.1&nbsp;+&nbsp;1 = <b>2.4x</b>, not something you'd get by multiplying them together. The two events can&rsquo;t run at once.</p>
         </div>
       </div>
 
@@ -117,7 +118,7 @@
         <p class="group-label">Session length <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></p>
         <div class="field">
           <label class="minilabel" for="minutes">Minutes per run</label>
-          <input type="text" id="minutes" inputmode="decimal" placeholder="e.g. 4" autocomplete="off">
+          <input type="text" id="minutes" inputmode="decimal" placeholder="Example. 4 minutes" autocomplete="off">
           <p class="help">Fill this in to get a rough grind time alongside your run count.</p>
         </div>
       </div>
