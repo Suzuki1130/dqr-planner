@@ -47,6 +47,18 @@ function compact(n){
   return Math.round(n).toLocaleString();
 }
 
+// Shrinks a .bignum .num element's font size once its text gets too long to
+// read comfortably at the default huge size (used for full, non-abbreviated
+// numbers, which can run to 15+ digits in the dungeon pot mode).
+function sizeBigNum(el){
+  const len = el.textContent.length;
+  if(len <= 10){ el.style.fontSize = ""; return; }
+  const scale = Math.max(0.28, 10 / len);
+  const vw = (13 * scale).toFixed(1);
+  const max = Math.max(22, Math.round(72 * scale));
+  el.style.fontSize = `clamp(18px, ${vw}vw, ${max}px)`;
+}
+
 function fmtVal(n){
   if(!n) return "";
   return n.toLocaleString();

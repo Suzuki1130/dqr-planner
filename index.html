@@ -201,7 +201,7 @@
   <div class="view-head">
     <p class="eyebrow">DQR Toolkit</p>
     <h1>Pot calculator</h1>
-    <p>Work out your max pot from your current pot and remaining upgrades.</p>
+    <p>Work out your max pot and upgrade gold cost from your current pot and remaining upgrades.</p>
   </div>
 
   <div class="calc">
@@ -214,6 +214,15 @@
           <div class="target" id="potSub"></div>
           <div class="strip">
             <div class="stat"><span class="sl">Formula</span><span class="sv" id="potFormula">—</span></div>
+          </div>
+        </div>
+        <div class="readout-in" style="border-top:1px solid var(--glass-border)">
+          <p class="eyebrow">Gold to full upgrade</p>
+          <div class="bignum" id="goldResult"><span class="num">—</span><span class="unit">Gold needed</span></div>
+          <div class="target" id="goldSub"></div>
+          <div class="strip">
+            <div class="stat"><span class="sl">Next upgrade</span><span class="sv" id="goldNext">—</span></div>
+            <div class="stat"><span class="sl">Formula</span><span class="sv" id="goldFormula">—</span></div>
           </div>
         </div>
       </div>
@@ -243,7 +252,7 @@
         <div class="field">
           <label class="flabel" for="potUpgradesDone">Already upgraded <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
           <input type="number" id="potUpgradesDone" min="0" step="1" value="0">
-          <p class="help">Only the upgrades you have left count toward your pot &mdash; put what you've already done here so it's not counted twice.</p>
+          <p class="help">Only the upgrades you have left count toward your pot &mdash; put what you've already done here so it's not counted twice. These two upgrade fields also drive the gold cost above &mdash; exact from upgrade 24 onward, matched gold-for-gold against Dungeon Bot on real items; a little slack (a couple hundred gold at most) below that.</p>
         </div>
       </div>
     </div>

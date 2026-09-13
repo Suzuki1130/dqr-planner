@@ -276,7 +276,7 @@ select{
 .bignum .num{
   display:block;font-family:var(--mono);font-weight:700;letter-spacing:-.03em;
   font-size:clamp(48px,13vw,72px);line-height:1;
-  color:var(--ink);
+  color:var(--ink);overflow-wrap:anywhere;
 }
 .bignum .unit{
   display:block;margin-top:8px;

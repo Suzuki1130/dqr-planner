@@ -1,9 +1,9 @@
 # DQR Toolkit
 
 A site for Dungeon Quest Reborn: a dungeon run calculator, a database of every dungeon's
-base EXP value (including Boss Raid), farming/gamepass rates, and a pot calculator —
-organised as five sections behind one floating nav bar (Calculator, Dungeons, Farming,
-Pots, About).
+base EXP value (including Boss Raid), farming/gamepass rates, and a pot calculator that
+also works out upgrade gold cost — organised as five sections behind one floating nav bar
+(Calculator, Pots, Dungeons, Farming, About).
 No build step, no framework, no server — just static files, split into folders instead of
 one giant `index.html`.
 
@@ -21,6 +21,8 @@ js/
   dungeons-table.js          All Dungeons EXP table (with search + sortable columns) + Boss Raid panel + live sheet sync
   prices-table.js            Farming & gamepass prices table (search + sortable columns) + its live sheet sync
   calculator.js               the run calculator itself
+  pot-calculator.js          the pot calculator (gear mode + dungeon mode) and,
+                              sharing the same upgrade fields, the upgrade gold cost calculator
   main.js                      kicks off the live EXP fetch once everything above is ready
 data/
   dungeons.js               BOSS_RAID + DUNGEONS — the numbers you edit by hand
@@ -142,6 +144,31 @@ are merged on top of the hardcoded ones rather than replacing them outright — 
 still blank on the sheet (like Northern Lands' "Nightmare + Rodin" while that number's still
 unconfirmed) keeps showing the value from `data/dungeons.js` instead of the whole column
 disappearing.
+
+## How the upgrade gold cost formula works
+
+The gold cost calculator lives inside `js/pot-calculator.js`, in the Pots tab — it reuses
+the same "Upgrades needed" (target) and "Already upgraded" (current) fields as the pot
+result, and shows the gold cost for that same range underneath the pot result. The formula
+was reverse-engineered from live in-game upgrade prices and cross-checked against Dungeon
+Bot's `calc-pot` totals (exact match on every real item tested so far):
+
+- Upgrades 0–23: a fixed table (`GOLD_RAMP`) read off the live upgrade panel. A few of
+  those steps (7–9, 11–19) were never logged individually, so they're interpolated — but
+  the table's total across all 24 steps is pinned to exactly 27,415 gold, solved for by
+  matching two real full-upgrade totals from Dungeon Bot, so only the *split* between
+  those few unlogged steps carries any slack (at most a couple hundred gold).
+- Upgrades 24–465: `cost(n) = 220n − 2335` gold, confirmed exact.
+- Upgrade 466 onward: a flat 100,000 gold per upgrade, confirmed exact — this is also the
+  466-upgrade cap the old Dungeon Quest wiki describes.
+
+Since almost every real item has thousands of upgrades, the 466+ flat-rate stretch
+dominates the total. The closed form for a full upgrade from 0 to `M` (for `M ≥ 466`,
+true of virtually every item) is `100,000 × M − 23,829,475` gold exactly.
+
+If you log exact costs for the still-unconfirmed upgrades (7, 8, 9, 11–19) from the live
+upgrade panel, update `GOLD_RAMP` in `js/pot-calculator.js` — the array is cost(n) for
+n = 0 to 23, in order — and the small remaining slack goes away entirely.
 
 ## How the maths works
 
