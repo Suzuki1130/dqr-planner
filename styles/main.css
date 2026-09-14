@@ -1,13 +1,4 @@
-/* ============================================================
-   DQR TOOLKIT — design system
-   Dark, game-oriented UI with restrained "liquid glass" surfaces.
-   Glass is reserved for: header, result readouts, dropdown/menu
-   popovers and selected/active states. Everything else is a flat
-   "plate" surface, a divider, or plain typography + spacing.
-   ============================================================ */
-
 :root{
-  /* --- base surfaces (same dark atmosphere as before) --- */
   --void:#181816;
   --void-soft:#1d1d1b;
   --plate:#232320;
@@ -18,13 +9,11 @@
   --ink-dim:#a8a397;
   --dim:#8d887c;
 
-  /* --- glass surfaces --- */
   --glass-bg: rgba(40,40,37,.58);
   --glass-border: rgba(255,255,255,.09);
   --glass-highlight: rgba(255,255,255,.05);
   --glass-blur: 20px;
 
-  /* --- difficulty colours --- */
   --easy:#6ba97a;
   --medium:#5b93ba;
   --hard:#9483b0;
@@ -32,11 +21,9 @@
   --nightmare:#c2685f;
   --odin:#c7a352;
 
-  /* --- accent (dynamic, follows selected difficulty) --- */
   --tier:#ea7c2f;
   --tier-rgb:234,124,47;
 
-  /* --- scale --- */
   --pad:clamp(16px,4vw,28px);
   --r-sm:8px;
   --r:12px;
@@ -67,9 +54,6 @@ body{
   min-height:100svh;
 }
 
-/* atmosphere: keep the original dark void + film-grain noise,
-   just add a very soft vignette so glass surfaces have something
-   to catch light against. No imagery replaced, no gradient "hero". */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   opacity:.035;mix-blend-mode:overlay;
@@ -92,9 +76,6 @@ a:hover{text-decoration:underline}
 :focus-visible{outline:2px solid var(--tier);outline-offset:2px;border-radius:4px}
 ::selection{background:rgba(var(--tier-rgb),.35)}
 
-/* =========================================================
-   HEADER — floating glass nav, not a traditional page header
-   ========================================================= */
 .site-header{position:sticky;top:0;z-index:40;padding:14px 0 0}
 .header-bar{
   display:flex;align-items:center;gap:10px;
@@ -138,9 +119,6 @@ a:hover{text-decoration:underline}
   box-shadow:0 1px 0 rgba(255,255,255,.2) inset, 0 4px 14px rgba(var(--tier-rgb),.35);
 }
 
-/* =========================================================
-   HERO / VIEW HEAD — compact, utility-first, not a landing page
-   ========================================================= */
 .hero{padding:26px 2px 4px;display:flex;flex-direction:column;gap:6px}
 .hero h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(22px,5vw,30px);letter-spacing:-.01em;color:var(--ink)}
 .hero p{margin:0;color:var(--dim);font-size:14px;max-width:56ch}
@@ -158,9 +136,6 @@ a:hover{text-decoration:underline}
 section.view[hidden]{display:none}
 section.view{padding-top:6px}
 
-/* =========================================================
-   SURFACES — plates (flat grouping) vs glass (elevated)
-   ========================================================= */
 .plate{background:var(--plate);border:1px solid var(--edge);border-radius:var(--r)}
 .pad{padding:clamp(16px,4vw,22px)}
 
@@ -192,17 +167,15 @@ section.view{padding-top:6px}
 .help{font-size:12.5px;color:var(--dim);margin:8px 0 0;line-height:1.5}
 .help b{color:var(--ink);font-weight:600}
 
-/* =========================================================
-   INPUTS
-   ========================================================= */
 input[type=text],input[type=number],select{
   width:100%;background:var(--void-soft);color:var(--ink);
   border:1px solid var(--edge);border-radius:var(--r-sm);padding:12px 13px;font-weight:500;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.28);
   transition:border-color .15s var(--ease),box-shadow .15s var(--ease);
 }
 input[type=text]:hover,input[type=number]:hover,select:hover{border-color:#524f47}
 input[type=text]:focus,input[type=number]:focus,select:focus{
-  border-color:var(--tier);box-shadow:0 0 0 3px rgba(var(--tier-rgb),.18);outline:none;
+  border-color:var(--tier);box-shadow:inset 0 1px 3px rgba(0,0,0,.28),0 0 0 3px rgba(var(--tier-rgb),.18);outline:none;
 }
 input[type=number],#haveXp,#minutes,#potCurrent,#potUpgrades,#potUpgradesDone{font-family:var(--mono);font-weight:700}
 .parsed-echo{display:block;font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:6px;min-height:1.2em}
@@ -227,34 +200,28 @@ select{
 .search-field .clear:hover{color:var(--ink)}
 .search-field .clear[hidden]{display:none}
 
-/* =========================================================
-   BUTTONS
-   ========================================================= */
 .btn{
-  background:var(--tier);color:#fff;border:0;border-radius:var(--r-sm);
-  padding:11px 18px;font-weight:600;letter-spacing:.01em;font-size:13.5px;
-  transition:filter .15s var(--ease),transform .08s var(--ease);
+  background:rgba(var(--tier-rgb),.92);
+  color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-pill);
+  padding:12px 20px;font-weight:600;letter-spacing:.01em;font-size:13.5px;
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 6px 14px -8px rgba(var(--tier-rgb),.45);
+  transition:filter .15s var(--ease),transform .08s var(--ease),box-shadow .15s var(--ease);
 }
-.btn:hover{filter:brightness(1.08)}
-.btn:active{transform:translateY(1px)}
-.btn-quiet{background:transparent;color:var(--dim);border:1px solid var(--edge);font-weight:500;transition:border-color .15s var(--ease),color .15s var(--ease)}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px);filter:brightness(.98)}
+.btn-quiet{background:transparent;color:var(--dim);border:1px solid var(--edge);border-radius:var(--r-pill);font-weight:500;transition:border-color .15s var(--ease),color .15s var(--ease)}
 .btn-quiet:hover{color:var(--ink);border-color:#524f47;filter:none}
 .link-btn{background:none;border:0;padding:0;color:var(--tier);font-size:12.5px;font-weight:600;font-family:var(--body)}
 .link-btn:hover{filter:brightness(1.15)}
 
-/* =========================================================
-   INFO NOTE
-   ========================================================= */
-.infonote{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px;font-size:12.5px;color:var(--dim);line-height:1.5}
+.infonote{display:flex;align-items:flex-start;gap:8px;margin:0 0 14px;font-size:12.5px;color:var(--dim);line-height:1.5}
+.infonote + .infonote{margin-top:-2px;padding-top:12px;border-top:1px solid var(--edge-soft)}
 .info-icon{
   flex:0 0 auto;width:16px;height:16px;margin-top:1px;border-radius:50%;border:1px solid var(--dim);
   display:inline-flex;align-items:center;justify-content:center;
   font-family:var(--display);font-weight:700;font-size:10px;color:var(--dim);
 }
 
-/* =========================================================
-   CALCULATOR LAYOUT
-   ========================================================= */
 .calc{display:grid;gap:18px}
 @media(min-width:920px){
   .calc{grid-template-columns:1.05fr .95fr;align-items:start;gap:22px}
@@ -265,7 +232,6 @@ select{
 .readout-wrap{position:sticky;top:74px;z-index:5;padding:0 0 4px;display:flex;flex-direction:column;gap:12px}
 @media(max-width:919px){.readout-wrap{position:static}}
 
-/* --- the RESULT: strongest glass treatment on the site --- */
 .readout{position:relative;overflow:hidden}
 .readout::before{
   content:"";position:absolute;inset:0;pointer-events:none;
@@ -309,15 +275,15 @@ select{
 .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));gap:8px}
 .tier{
   --c:var(--medium);--c-rgb:91,147,186;
-  text-align:left;background:var(--void-soft);color:var(--dim);
+  text-align:left;color:var(--dim);background:var(--void-soft);
   border:1px solid var(--edge);border-left:3px solid var(--c);
-  border-radius:var(--r-sm);padding:10px 12px;display:grid;gap:3px;
+  border-radius:var(--r);padding:11px 13px;display:grid;gap:3px;
   transition:border-color .15s var(--ease),background-color .15s var(--ease);
 }
 .tier:hover{border-color:var(--c)}
 .tier .tname{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 .tier .tval{font-family:var(--mono);font-weight:600;font-size:11.5px;color:var(--dim)}
-.tier[aria-pressed="true"]{background:rgba(var(--c-rgb),.14);box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
+.tier[aria-pressed="true"]{background:rgba(var(--c-rgb),.14)}
 .tier[aria-pressed="true"] .tval{color:var(--c)}
 .tier.blank{opacity:.5}
 
@@ -331,17 +297,108 @@ select{
 }
 .pill b{font-family:var(--mono);font-size:12px;font-weight:700}
 .pill:hover{border-color:#524f47;color:var(--ink)}
-.pill[aria-pressed="true"]{
-  background:linear-gradient(180deg, rgba(255,255,255,.08), transparent), rgba(var(--tier-rgb),.16);
-  border-color:var(--tier);color:var(--ink);
-}
+.pill[aria-pressed="true"]{background:rgba(var(--tier-rgb),.14);border-color:var(--tier);color:var(--ink)}
 .pill[aria-pressed="true"] b{color:var(--tier)}
 .pill[data-excluded="true"]{opacity:.35;cursor:not-allowed}
 .pill[data-excluded="true"]:hover{border-color:var(--edge);color:var(--dim)}
 
-/* =========================================================
-   TABLES — database + farming
-   ========================================================= */
+/* upgrade progress bar — pot calculator */
+.progress{display:flex;align-items:center;gap:12px;margin-top:12px}
+.progress-bar{
+  flex:1;height:9px;border-radius:var(--r-pill);background:var(--void-soft);
+  border:1px solid var(--edge-soft);box-shadow:inset 0 1px 2px rgba(0,0,0,.35);overflow:hidden;
+}
+.progress-fill{
+  height:100%;width:0%;border-radius:var(--r-pill);
+  background:var(--tier);
+  transition:width .25s var(--ease);
+}
+.progress-label{flex:0 0 auto;font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--dim);white-space:nowrap}
+
+/* screenshot scanner — pot calculator */
+.scanbox{
+  display:block;position:relative;cursor:pointer;margin-bottom:12px;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  border:1.5px dashed var(--glass-border);border-radius:var(--r-lg);
+  padding:22px 18px;
+  transition:border-color .15s var(--ease),background-color .15s var(--ease);
+}
+.scanbox:hover,.scanbox:focus-within{border-color:var(--tier)}
+.scanbox.dragover{border-color:var(--tier);background:rgba(var(--tier-rgb),.1)}
+
+.scanbox-idle,.scanbox-busy,.scanbox-preview{display:flex}
+.scanbox-idle[hidden],.scanbox-busy[hidden],.scanbox-preview[hidden]{display:none}
+
+.scanbox-idle{flex-direction:column;align-items:center;text-align:center;gap:4px;color:var(--dim)}
+.scanbox-idle svg{color:var(--tier);margin-bottom:6px}
+.scanbox-text{font-size:13.5px;color:var(--ink-dim)}
+.scanbox-text b{color:var(--ink)}
+
+.scanbox-busy{flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--dim);font-size:13px}
+.spinner{
+  width:22px;height:22px;border-radius:50%;
+  border:2.5px solid var(--edge);border-top-color:var(--tier);
+  animation:scanspin .7s linear infinite;
+}
+@keyframes scanspin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spinner{animation-duration:1.4s}}
+
+.scanbox-preview{align-items:center;justify-content:center;position:relative}
+.scanbox-preview img{max-height:180px;max-width:100%;border-radius:var(--r-sm);display:block;object-fit:contain}
+.scan-remove{
+  position:absolute;top:-10px;right:-10px;width:28px;height:28px;border-radius:50%;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(10px) saturate(140%);
+  backdrop-filter:blur(10px) saturate(140%);
+  border:1px solid var(--glass-border);color:var(--ink-dim);
+  display:flex;align-items:center;justify-content:center;font-size:12px;line-height:0;
+}
+.scan-remove:hover{color:var(--ink);border-color:#524f47}
+
+.scan-error{
+  background:rgba(194,104,95,.1);border:1px solid rgba(194,104,95,.35);color:#e0a8a1;
+  border-radius:var(--r-sm);padding:11px 13px;font-size:13px;margin-bottom:12px;
+}
+
+.scan-result{
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+  border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:16px;
+}
+
+.scan-stat-list{display:flex;flex-direction:column;gap:8px}
+.scan-stat-row{display:flex;align-items:stretch;gap:8px}
+.scan-stat-select{
+  flex:1 1 auto;text-align:left;min-width:0;
+  background:var(--void-soft);color:var(--dim);border:1px solid var(--edge);
+  border-radius:var(--r-pill);padding:0 16px;
+  font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.04em;
+  transition:border-color .15s var(--ease),background-color .15s var(--ease),color .15s var(--ease);
+}
+.scan-stat-select:hover{border-color:#524f47;color:var(--ink)}
+.scan-stat-select[aria-pressed="true"]{background:rgba(var(--tier-rgb),.16);border-color:var(--tier);color:var(--ink)}
+.scan-stat-input{
+  flex:0 1 150px;min-width:110px;background:var(--void-soft);color:var(--ink);
+  border:1px solid var(--edge);border-radius:var(--r-pill);padding:10px 14px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.28);
+  font-family:var(--mono);font-weight:700;font-size:13.5px;text-align:right;
+}
+.scan-stat-input::placeholder{color:var(--dim);font-family:var(--body);font-weight:500;font-style:italic}
+.scan-stat-input:focus{border-color:var(--tier);box-shadow:inset 0 1px 3px rgba(0,0,0,.28),0 0 0 3px rgba(var(--tier-rgb),.18);outline:none}
+@media(max-width:480px){
+  .scan-stat-row{flex-wrap:wrap}
+  .scan-stat-select{flex:1 1 100%}
+  .scan-stat-input{flex:1 1 100%}
+}
+
+.scan-apply-error{
+  background:rgba(194,104,95,.1);border:1px solid rgba(194,104,95,.35);color:#e0a8a1;
+  border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;margin-top:12px;
+}
+
 .table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .result-count{font-size:12px;color:var(--dim);white-space:nowrap}
 
@@ -398,9 +455,6 @@ table.dataTable tbody tr.hide{display:none}
 .warn{background:rgba(194,104,95,.1);border:1px solid rgba(194,104,95,.35);color:#e0a8a1;border-radius:var(--r-sm);padding:11px 13px;font-size:13px;margin-bottom:0}
 .warn b{color:#e6b3ad}
 
-/* =========================================================
-   ABOUT
-   ========================================================= */
 .about-grid{display:grid;gap:14px}
 @media(min-width:760px){.about-grid{grid-template-columns:1fr 1fr}}
 .about-block h3{

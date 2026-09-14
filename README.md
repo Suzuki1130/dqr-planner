@@ -3,7 +3,8 @@
 A site for Dungeon Quest Reborn: a dungeon run calculator, a database of every dungeon's
 base EXP value (including Boss Raid), farming/gamepass rates, and a pot calculator that
 also works out upgrade gold cost — organised as five sections behind one floating nav bar
-(Calculator, Pots, Dungeons, Farming, About).
+(Runs, Pots, Dungeon EXP, Gamepasses, About). The tabs used to be labelled Calculator/Pots/
+Dungeons/Farming — renamed for clarity, nothing about the underlying views changed.
 No build step, no framework, no server — just static files, split into folders instead of
 one giant `index.html`.
 
@@ -13,16 +14,21 @@ one giant `index.html`.
 index.html              the shell: markup, plus the <script>/<link> tags that load everything else
 styles/
   main.css                the design system: tokens, reset, glass header/result styles,
-                          plate/table/form styles, the run calculator (readout, tiers,
-                          boost pills), the database tables, badges, About/footer
+                          plate/form styles, the run calculator (readout, tiers, boost pills),
+                          the pot calculator's upgrade progress bar + screenshot scanner,
+                          the database tables, badges, About/footer
 js/
   utils.js                $ helper, localStorage wrapper, colour + number formatting
-  tabs.js                   the five-section nav switcher (Calculator/Dungeons/Farming/Pots/About)
-  dungeons-table.js          All Dungeons EXP table (with search + sortable columns) + Boss Raid panel + live sheet sync
-  prices-table.js            Farming & gamepass prices table (search + sortable columns) + its live sheet sync
+  tabs.js                   the five-section nav switcher (Runs/Pots/Dungeon EXP/Gamepasses/About)
+  dungeons-table.js          Dungeon EXP table (with search + sortable columns) + Boss Raid panel + live sheet sync
+  prices-table.js            Gamepasses table (search + sortable columns) + its live sheet sync
   calculator.js               the run calculator itself
-  pot-calculator.js          the pot calculator (gear mode + dungeon mode) and,
-                              sharing the same upgrade fields, the upgrade gold cost calculator
+  pot-calculator.js          the pot calculator (gear mode + dungeon mode), the upgrade gold
+                              cost calculator, and the upgrade-progress bar — all sharing the
+                              same Current pot / Already upgraded / Upgrades needed fields
+  pot-scan.js                 the screenshot scanner on the Pots tab: OCRs an uploaded item
+                              card client-side (Tesseract.js) and offers to fill in those
+                              same three fields for you — see "Scanning a screenshot" below
   main.js                      kicks off the live EXP fetch once everything above is ready
 data/
   dungeons.js               BOSS_RAID + DUNGEONS — the numbers you edit by hand
@@ -35,9 +41,42 @@ images/
   apple-touch-icon-180.svg          same icon as svg, kept for anywhere else that can use it
 ```
 
-The scripts load in that order (data → utils → the three feature files → calculator → main),
-because later files use functions and data the earlier ones define. If you add a new script,
-slot it in where it belongs in that chain rather than at the very top or bottom.
+The scripts load in that order (data → utils → the three feature files → calculator →
+pot-calculator → pot-scan → main), because later files use functions and data the earlier
+ones define. If you add a new script, slot it in where it belongs in that chain rather than
+at the very top or bottom.
+
+## Scanning a screenshot (Pots tab)
+
+Instead of typing Current pot / Already upgraded / Upgrades needed by hand, you can upload
+(click, drag-drop, or paste with Ctrl+V) a screenshot of one item's stat card — the tooltip
+that shows Physical power, Spell Power, Health, REQ Lvl, Upgrades and Sell.
+
+`js/pot-scan.js` runs that image through [Tesseract.js](https://github.com/naptha/tesseract.js)
+entirely in the browser (loaded from jsDelivr in `index.html`) — the screenshot is never
+uploaded anywhere, same as everything else on this site. It reads off Physical power, Spell
+Power, Health, and the Upgrades `done/total` line, then guesses which of the three stats is
+this item's "main pot" from a class keyword anywhere in the card's text:
+
+```js
+const POT_SCAN_CLASS_MAP = [
+  { pattern:/guardian/i,  stat:"health" },
+  { pattern:/warrior/i,   stat:"physical" },
+  { pattern:/mage/i,      stat:"spell" },
+  // ...
+];
+```
+
+If nothing matches, it falls back to whichever of Physical/Spell power looks dominant. Either
+way, you get a chance to confirm (or override) the guess with three stat buttons before
+anything is filled in — OCR on small game UI text won't always be perfect, so nothing gets
+applied to the real fields until you hit **Calculate pot**. Add a line to
+`POT_SCAN_CLASS_MAP` if a new item line uses a class name this doesn't recognise yet.
+
+To make small pixel-font text easier to read, it runs the image through a canvas upscale +
+contrast pass before OCR, then always takes a second, unprocessed pass and merges the two —
+one pass alone regularly misses one field even when it finds the rest, so this doesn't try to
+guess when to skip the second pass.
 
 ## Put it online (GitHub Pages)
 

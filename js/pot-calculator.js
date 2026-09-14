@@ -37,8 +37,7 @@ function dungeonPot(start, upgrades){
 }
 // this is the formula we normally use for dungeons pirate island to current ones
 
-// --- upgrade gold cost -----------------------------------------------------
-// Reverse-engineered from live in-game upgrade prices and cross-checked
+// upgrade gold cost — reverse-engineered from live in-game upgrade prices and cross-checked
 // against Dungeon Bot's calc-pot totals (exact match on every real item
 // tested so far):
 //   upgrades 0-23   fixed ramp-up table (GOLD_RAMP below)
@@ -93,7 +92,6 @@ function showGoldResult(text, isMessage){
     el.classList.remove("beat"); void el.offsetWidth; el.classList.add("beat");
   }
 }
-// -----------------------------------------------------------------------
 
 function showPotResult(text, isMessage){
   const el = $("potResult");
@@ -127,6 +125,8 @@ function calculatePot(){
     $("goldSub").textContent = "";
     $("goldNext").textContent = "—";
     $("goldFormula").textContent = "—";
+    $("potProgressFill").style.width = "0%";
+    $("potProgressLabel").textContent = "0 / 0 upgrades";
     return;
   }
 
@@ -152,6 +152,11 @@ function calculatePot(){
       : done >= GOLD_RAMP.length
         ? "220n − 2,335, capping at 100,000"
         : "fixed ramp-up table";
+
+  const pct = total > 0 ? Math.min(100, Math.max(0, (done / total) * 100)) : 0;
+  $("potProgressFill").style.width = pct + "%";
+  $("potProgressLabel").textContent =
+    `${done.toLocaleString()} / ${total.toLocaleString()} upgrades${total > 0 ? " (" + Math.round(pct) + "%)" : ""}`;
 
   store.set(KEY_POT, JSON.stringify({ mode: curPotMode, start, total, done }));
 }

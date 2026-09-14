@@ -29,10 +29,10 @@
     <div class="brand"><span class="accent">DQR</span><span class="full">Toolkit</span></div>
     <div class="nav-scroll">
       <nav class="primary-nav" role="tablist" aria-label="Sections" id="primaryNav">
-        <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Calculator</button>
+        <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Runs</button>
         <button id="tab-pot" role="tab" aria-controls="view-pot" aria-selected="false">Pots</button>
-        <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">Dungeons</button>
-        <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Farming</button>
+        <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">Dungeon EXP</button>
+        <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Gamepasses</button>
         <button id="tab-about" role="tab" aria-controls="view-about" aria-selected="false">About</button>
       </nav>
       <span class="nav-fade nav-fade-l" id="navFadeL" aria-hidden="true"></span>
@@ -229,11 +229,65 @@
     </div>
 
     <div class="controls plate pad">
+
+      <div class="group">
+        <p class="group-label">Scan from screenshot</p>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">i</span>
+          <span>Runs in your browser &mdash; nothing gets uploaded. Reads Physical/Spell power, Health and Upgrades off a cropped item card.</span>
+        </div>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">!</span>
+          <span>You can type your stats in manually below instead, or upload a screenshot and let it fill them in for you. Detection is still being improved and can occasionally miss a number &mdash; if a field comes back empty or looks wrong, just type it in yourself.</span>
+        </div>
+
+        <label class="scanbox" id="scanBox" for="scanFile">
+          <input type="file" id="scanFile" accept="image/*" hidden>
+
+          <span class="scanbox-idle" id="scanIdle">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span class="scanbox-text"><b>Click to upload</b>, drop an image, or paste with Ctrl+V</span>
+          </span>
+
+          <span class="scanbox-busy" id="scanBusy" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="scanBusyText">Reading…</span>
+          </span>
+
+          <span class="scanbox-preview" id="scanPreviewWrap" hidden>
+            <img id="scanPreviewImg" alt="Uploaded item card">
+            <button type="button" class="scan-remove" id="scanRemove" aria-label="Remove screenshot">✕</button>
+          </span>
+        </label>
+
+        <div class="scan-error" id="scanError" hidden></div>
+
+        <div class="scan-result" id="scanResult" hidden>
+          <div class="scan-stat-list" id="scanStatPicker"></div>
+          <div class="two" style="margin-top:10px">
+            <div class="field" style="margin-bottom:0">
+              <label class="minilabel" for="scanUpDone">Already upgraded</label>
+              <input type="number" id="scanUpDone" min="0" step="1" placeholder="not found">
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label class="minilabel" for="scanUpTotal">Upgrades needed</label>
+              <input type="number" id="scanUpTotal" min="0" step="1" placeholder="not found">
+            </div>
+          </div>
+          <div class="scan-apply-error" id="scanApplyError" hidden></div>
+          <button type="button" class="btn" id="scanApply" style="margin-top:12px;width:100%">Calculate pot</button>
+        </div>
+      </div>
+
       <div class="group">
         <p class="group-label">Pot type</p>
         <div class="infonote">
           <span class="info-icon" aria-hidden="true">i</span>
           <span>Kept as two separate modes because the formulas only agree once your pot hits 200 &mdash; below that, combining them would throw off the numbers.</span>
+        </div>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">!</span>
+          <span>Pick the button that matches your item's dungeon before reading the result &mdash; scanning or typing in your stats doesn't switch this for you, so it's easy to leave it on the wrong one by mistake.</span>
         </div>
         <div class="tiers" id="potModes"></div>
         <p class="help" id="potModeHelp"></p>
@@ -242,17 +296,26 @@
       <div class="group">
         <p class="group-label">Your pot</p>
         <div class="field">
-          <label class="flabel" for="potCurrent">Current pot</label>
+          <label class="flabel" for="potCurrent">Current pot <span style="text-transform:none;letter-spacing:0;font-weight:500">(current stat value)</span></label>
           <input type="number" id="potCurrent" min="0" step="1" value="1">
         </div>
         <div class="field">
-          <label class="flabel" for="potUpgrades">Upgrades needed</label>
-          <input type="number" id="potUpgrades" min="0" step="1" value="0">
-        </div>
-        <div class="field">
-          <label class="flabel" for="potUpgradesDone">Already upgraded <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
-          <input type="number" id="potUpgradesDone" min="0" step="1" value="0">
-          <p class="help">Only the upgrades you have left count toward your pot &mdash; put what you've already done here so it's not counted twice. These two upgrade fields also drive the gold cost above &mdash; exact from upgrade 24 onward, matched gold-for-gold against Dungeon Bot on real items; a little slack (a couple hundred gold at most) below that.</p>
+          <span class="flabel">Upgrade progress</span>
+          <div class="two">
+            <div>
+              <label class="minilabel" for="potUpgradesDone">Already upgraded</label>
+              <input type="number" id="potUpgradesDone" min="0" step="1" value="0">
+            </div>
+            <div>
+              <label class="minilabel" for="potUpgrades">Upgrades needed</label>
+              <input type="number" id="potUpgrades" min="0" step="1" value="0">
+            </div>
+          </div>
+          <div class="progress" id="potProgress">
+            <div class="progress-bar"><div class="progress-fill" id="potProgressFill"></div></div>
+            <span class="progress-label" id="potProgressLabel">0 / 0 upgrades</span>
+          </div>
+          <p class="help">Only the upgrades you have left count toward your pot &mdash; put what you've already done on the left so it's not counted twice. These two fields also drive the gold cost above &mdash; exact from upgrade 24 onward, matched gold-for-gold against Dungeon Bot on real items; a little slack (a couple hundred gold at most) below that.</p>
         </div>
       </div>
     </div>
@@ -322,6 +385,8 @@
 <script src="js/prices-table.js"></script>
 <script src="js/calculator.js"></script>
 <script src="js/pot-calculator.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="js/pot-scan.js"></script>
 <script src="js/main.js"></script>
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a254fb5b07f3410ab2b9701c3eeaa2c1"}'></script>
 </body>
