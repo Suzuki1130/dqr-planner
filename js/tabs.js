@@ -1,6 +1,7 @@
 const TABS = [
   ["tab-calc","view-calc"],
   ["tab-pot","view-pot"],
+  ["tab-damage","view-damage"],
   ["tab-list","view-list"],
   ["tab-prices","view-prices"],
   ["tab-about","view-about"]

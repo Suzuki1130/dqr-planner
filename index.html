@@ -31,6 +31,7 @@
       <nav class="primary-nav" role="tablist" aria-label="Sections" id="primaryNav">
         <button id="tab-calc" role="tab" aria-controls="view-calc" aria-selected="true">Runs</button>
         <button id="tab-pot" role="tab" aria-controls="view-pot" aria-selected="false">Pots</button>
+        <button id="tab-damage" role="tab" aria-controls="view-damage" aria-selected="false">Damage</button>
         <button id="tab-list" role="tab" aria-controls="view-list" aria-selected="false">Dungeon EXP</button>
         <button id="tab-prices" role="tab" aria-controls="view-prices" aria-selected="false">Gamepasses</button>
         <button id="tab-about" role="tab" aria-controls="view-about" aria-selected="false">About</button>
@@ -323,6 +324,113 @@
   </div>
 </section>
 
+<section class="view" id="view-damage" role="tabpanel" aria-labelledby="tab-damage" hidden>
+
+  <div class="view-head">
+    <p class="eyebrow">DQR Toolkit</p>
+    <h1>Damage calculator</h1>
+    <p>Estimate your hit damage from gear pot, skill points, spell multiplier and the Inner multiplier.</p>
+  </div>
+
+  <div class="calc">
+
+    <div class="readout-wrap">
+      <div class="readout glass">
+        <div class="readout-in">
+          <p class="eyebrow">Damage</p>
+          <div class="bignum" id="dmgResult"><span class="num">—</span><span class="unit">Final damage</span></div>
+          <div class="target" id="dmgSub"></div>
+          <div class="strip">
+            <div class="stat"><span class="sl">Base damage</span><span class="sv" id="dmgBase">—</span></div>
+            <div class="stat"><span class="sl">Inner multiplier</span><span class="sv" id="dmgInner">—</span></div>
+            <div class="stat"><span class="sl">Final damage</span><span class="sv" id="dmgFinal">—</span></div>
+            <div class="stat"><span class="sl">Weapon pot</span><span class="sv" id="dmgWeaponEcho">—</span></div>
+            <div class="stat"><span class="sl">Armor pot</span><span class="sv" id="dmgArmorEcho">—</span></div>
+            <div class="stat"><span class="sl">Helmet pot</span><span class="sv" id="dmgHelmetEcho">—</span></div>
+            <div class="stat"><span class="sl">Skill points</span><span class="sv" id="dmgSkillEcho">—</span></div>
+            <div class="stat"><span class="sl">Spell multiplier</span><span class="sv" id="dmgSpellEcho">—</span></div>
+          </div>
+          <button type="button" class="link-btn" id="dmgBreakdownToggle" aria-expanded="false" aria-controls="dmgBreakdown" style="margin-top:16px">Formula breakdown ▾</button>
+        </div>
+
+        <div class="breakdown" id="dmgBreakdown"></div>
+
+        <div class="readout-in" style="border-top:1px solid var(--glass-border)">
+          <p class="eyebrow">Inner comparison</p>
+          <div class="strip" style="margin-top:8px;border-top:0;padding-top:0">
+            <div class="stat"><span class="sl">Without Inner (1.00x)</span><span class="sv" id="dmgCompareNone">—</span></div>
+            <div class="stat"><span class="sl">With Inner (1.80x)</span><span class="sv" id="dmgCompareWithout">—</span></div>
+            <div class="stat"><span class="sl">With Enhanced Inner (1.90x)</span><span class="sv" id="dmgCompareWith">—</span></div>
+          </div>
+          <div class="target" id="dmgCompareDiff"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls plate pad">
+
+      <div class="group">
+        <p class="group-label">Gear pot</p>
+        <div class="field">
+          <label class="flabel" for="dmgWeapon">Weapon pot</label>
+          <input type="number" id="dmgWeapon" min="0" step="1" value="73279273">
+        </div>
+        <div class="field">
+          <label class="flabel" for="dmgArmor">Armor pot</label>
+          <input type="number" id="dmgArmor" min="0" step="1" value="6945538">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="flabel" for="dmgHelmet">Helmet pot</label>
+          <input type="number" id="dmgHelmet" min="0" step="1" value="7131930">
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Skill points</p>
+        <div class="field" style="margin-bottom:0">
+          <label class="flabel" for="dmgSkill">Skill points</label>
+          <input type="number" id="dmgSkill" min="0" step="1" value="199">
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Spell</p>
+        <div class="infonote">
+          <span class="info-icon" aria-hidden="true">i</span>
+          <span>Pick a dungeon and spell to set the Spell Multiplier — from community-logged spell values.</span>
+        </div>
+        <div class="field">
+          <label class="minilabel" for="dmgSpellDungeon">Dungeon</label>
+          <select id="dmgSpellDungeon"></select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="minilabel" for="dmgSpellPick">Spell</label>
+          <select id="dmgSpellPick" disabled></select>
+          <span class="parsed-echo" id="dmgSpellMultEcho"></span>
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Inner</p>
+        <div class="field" style="margin-bottom:0">
+          <span class="flabel">Inner multiplier</span>
+          <div class="tiers" id="dmgInnerModes"></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="field" style="margin-bottom:0">
+          <button type="button" class="btn-quiet" id="dmgReset" style="width:100%">Reset to example values</button>
+        </div>
+      </div>
+
+      <p class="help">Community formula — values may change as DQR mechanics are verified.</p>
+
+    </div>
+
+  </div>
+</section>
+
 <section class="view" id="view-about" role="tabpanel" aria-labelledby="tab-about" hidden>
 
   <div class="view-head">
@@ -379,12 +487,14 @@
 <script src="data/dungeons.js"></script>
 <script src="data/boosts.js"></script>
 <script src="data/price-snapshot.js"></script>
+<script src="data/damage-spells.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/tabs.js"></script>
 <script src="js/dungeons-table.js"></script>
 <script src="js/prices-table.js"></script>
 <script src="js/calculator.js"></script>
 <script src="js/pot-calculator.js"></script>
+<script src="js/damage.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <script src="js/pot-scan.js"></script>
 <script src="js/main.js"></script>
