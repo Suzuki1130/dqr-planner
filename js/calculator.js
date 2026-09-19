@@ -110,6 +110,7 @@ function calculate(){
   $("rEff").textContent = eff ? compact(eff) : "—";
 
   const valid = to > from;
+  $("toLvl").style.borderColor = valid ? "" : "var(--nightmare)";
   const gross = valid ? totalXpBetween(from, to) : 0;
   const need = valid ? Math.max(0, gross - have) : 0;
   $("rTotal").textContent = valid ? compact(need) : "—";
@@ -161,6 +162,32 @@ function calculate(){
 
 dungeonSel.addEventListener("change", () => { buildTiers(curDiff); calculate(); });
 ["minutes","fromLvl","toLvl","haveXp"].forEach(id => $(id).addEventListener("input", calculate));
+
+const copyRunBtn = $("copyRunSummary");
+if(copyRunBtn) copyRunBtn.addEventListener("click", () => {
+  const runsEl = $("runs");
+  if(runsEl.classList.contains("msg")) return;
+  const lines = [
+    "Run Calculator",
+    "",
+    "🗡️ Runs Needed 🗡️",
+    runsEl.querySelector(".num").textContent,
+    "",
+    "⚡ EXP per Run ⚡",
+    $("rEff").textContent,
+    "",
+    "📊 EXP Remaining 📊",
+    $("rTotal").textContent
+  ];
+  if(!$("statTime").hidden) lines.push("", "⏱️ Time ⏱️", $("rTime").textContent);
+  lines.push("", "Dungeon Quest Reborn — DQR Toolkit | Made by Harry, Head of the Wiki");
+  const summary = lines.join("\n");
+  navigator.clipboard.writeText(summary).then(() => {
+    const old = copyRunBtn.textContent;
+    copyRunBtn.textContent = "Copied!";
+    setTimeout(() => { copyRunBtn.textContent = old; }, 1500);
+  });
+});
 
 (function restore(){
   let s = null;

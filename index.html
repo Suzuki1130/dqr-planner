@@ -65,6 +65,7 @@
             <div class="stat"><span class="sl">EXP remaining</span><span class="sv" id="rTotal">—</span></div>
             <div class="stat" id="statTime" hidden><span class="sl">Time</span><span class="sv" id="rTime">—</span></div>
           </div>
+          <button type="button" class="btn-quiet copy-summary" id="copyRunSummary" style="margin-top:14px;width:100%">Copy summary</button>
         </div>
         <div class="breakdown" id="breakdown"></div>
       </div>
@@ -73,10 +74,16 @@
     <div class="controls plate pad">
 
       <div class="group">
-        <p class="group-label">Current progress</p>
-        <div class="field">
-          <label class="minilabel" for="fromLvl">Current level</label>
-          <input type="number" id="fromLvl" min="1" max="299" value="1">
+        <p class="group-label">Levels</p>
+        <div class="two">
+          <div class="field">
+            <label class="minilabel" for="fromLvl">Current level</label>
+            <input type="number" id="fromLvl" min="1" max="299" value="1">
+          </div>
+          <div class="field">
+            <label class="minilabel" for="toLvl">Target level</label>
+            <input type="number" id="toLvl" min="2" max="300" value="50">
+          </div>
         </div>
         <div class="field">
           <label class="flabel" for="haveXp">Current EXP <span style="text-transform:none;letter-spacing:0;font-weight:500">(Optional)</span></label>
@@ -84,14 +91,6 @@
                  autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
           <span class="parsed-echo" id="haveXpEcho"></span>
           <p class="help">Shorthand works: <b>1K</b>, <b>2.5M</b>, <b>1B</b>, <b>1T</b>, <b>1Qa</b>.</p>
-        </div>
-      </div>
-
-      <div class="group">
-        <p class="group-label">Target</p>
-        <div class="field">
-          <label class="minilabel" for="toLvl">Target level</label>
-          <input type="number" id="toLvl" min="2" max="300" value="50">
         </div>
       </div>
 
@@ -225,6 +224,7 @@
             <div class="stat"><span class="sl">Next upgrade</span><span class="sv" id="goldNext">—</span></div>
             <div class="stat"><span class="sl">Formula</span><span class="sv" id="goldFormula">—</span></div>
           </div>
+          <button type="button" class="btn-quiet copy-summary" id="copyPotSummary" style="margin-top:14px;width:100%">Copy summary</button>
         </div>
       </div>
     </div>

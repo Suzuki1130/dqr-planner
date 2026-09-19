@@ -204,7 +204,11 @@ function potScanFileToDataUrl(file){
       input.type = "number"; input.min = "0"; input.step = "1";
       input.className = "scan-stat-input"; input.placeholder = "not found";
       if(!isNaN(val)) input.value = Math.round(val);
-      input.addEventListener("input", () => { applyError.hidden = true; });
+      else input.classList.add("unread");
+      input.addEventListener("input", () => {
+        applyError.hidden = true;
+        input.classList.toggle("unread", input.value === "" || isNaN(+input.value));
+      });
       statInputs[stat] = input;
 
       row.appendChild(btn);

@@ -163,6 +163,33 @@ function calculatePot(){
 
 ["potCurrent","potUpgrades","potUpgradesDone"].forEach(id => $(id).addEventListener("input", calculatePot));
 
+const copyPotBtn = $("copyPotSummary");
+if(copyPotBtn) copyPotBtn.addEventListener("click", () => {
+  if($("potResult").classList.contains("msg")) return;
+  const maxPower = $("potResult").querySelector(".num").textContent;
+  const basePotential = Math.round(+$("potCurrent").value).toLocaleString();
+  const upgradeCost = $("goldResult").querySelector(".num").textContent;
+  const summary = [
+    "Pot Calculator",
+    "",
+    "⚔️ Max Power ⚔️",
+    maxPower,
+    "",
+    "⚔️ Base Potential ⚔️",
+    basePotential,
+    "",
+    "💰 Upgrade Cost 💰",
+    upgradeCost,
+    "",
+    "Dungeon Quest Reborn — DQR Toolkit | Made by Harry, Head of the Wiki"
+  ].join("\n");
+  navigator.clipboard.writeText(summary).then(() => {
+    const old = copyPotBtn.textContent;
+    copyPotBtn.textContent = "Copied!";
+    setTimeout(() => { copyPotBtn.textContent = old; }, 1500);
+  });
+});
+
 (function restorePot(){
   let s = null;
   try { s = JSON.parse(store.get(KEY_POT) || "null"); } catch(e){}

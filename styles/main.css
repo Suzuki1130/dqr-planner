@@ -178,8 +178,9 @@ input[type=text]:focus,input[type=number]:focus,select:focus{
   border-color:var(--tier);box-shadow:inset 0 1px 3px rgba(0,0,0,.28),0 0 0 3px rgba(var(--tier-rgb),.18);outline:none;
 }
 input[type=number],#haveXp,#minutes,#potCurrent,#potUpgrades,#potUpgradesDone{font-family:var(--mono);font-weight:700}
-.parsed-echo{display:block;font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:6px;min-height:1.2em}
-.parsed-echo.bad{color:var(--nightmare)}
+.parsed-echo{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--dim);margin-top:6px;min-height:1.2em;padding:2px 9px;border-radius:var(--r-pill);background:var(--void-soft)}
+.parsed-echo:empty{padding:0;background:none}
+.parsed-echo.bad{color:#e0a8a1;background:rgba(194,104,95,.12)}
 select{
   appearance:none;
   background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%);
@@ -388,6 +389,7 @@ select{
 }
 .scan-stat-input::placeholder{color:var(--dim);font-family:var(--body);font-weight:500;font-style:italic}
 .scan-stat-input:focus{border-color:var(--tier);box-shadow:inset 0 1px 3px rgba(0,0,0,.28),0 0 0 3px rgba(var(--tier-rgb),.18);outline:none}
+.scan-stat-input.unread{border-color:var(--odin);box-shadow:inset 0 1px 3px rgba(0,0,0,.28),0 0 0 2px rgba(199,163,82,.18)}
 @media(max-width:480px){
   .scan-stat-row{flex-wrap:wrap}
   .scan-stat-select{flex:1 1 100%}
