@@ -48,6 +48,7 @@ function formatExact(n) {
 
 let curInnerMode = DAMAGE_DEFAULTS.inner;
 let curSpellMultiplier = null;
+let curSpellNote = null;
 let curSpellDungeonIndex = "";
 let curSpellKey = "";
 
@@ -84,6 +85,19 @@ let curSpellKey = "";
     echo.textContent = curSpellMultiplier != null ? `Multiplier: ${curSpellMultiplier}x` : "";
   }
 
+  function updateSpellNote() {
+    const wrap = $("dmgSpellNoteWrap");
+    const note = $("dmgSpellNote");
+    if (!wrap || !note) return;
+    if (curSpellNote) {
+      note.textContent = curSpellNote;
+      wrap.hidden = false;
+    } else {
+      note.textContent = "";
+      wrap.hidden = true;
+    }
+  }
+
   function rebuildSpells() {
     spellSel.innerHTML = "";
     const d = DAMAGE_SPELL_DUNGEONS[+dungeonSel.value];
@@ -112,19 +126,23 @@ let curSpellKey = "";
     curSpellDungeonIndex = dungeonSel.value;
     curSpellKey = "";
     curSpellMultiplier = null;
+    curSpellNote = null;
     rebuildSpells();
     updateMultEcho();
+    updateSpellNote();
     calculateDamage();
   });
   spellSel.addEventListener("change", () => {
     const d = DAMAGE_SPELL_DUNGEONS[+dungeonSel.value];
-    if (!d || !spellSel.value) { curSpellMultiplier = null; updateMultEcho(); calculateDamage(); return; }
+    if (!d || !spellSel.value) { curSpellMultiplier = null; curSpellNote = null; updateMultEcho(); updateSpellNote(); calculateDamage(); return; }
     const [group, idx] = spellSel.value.split(":");
     const list = group === "Warrior" ? d.warrior : d.mage;
     const spell = list && list[+idx];
     curSpellMultiplier = spell ? spell.mult : null;
+    curSpellNote = spell && spell.note ? spell.note : null;
     curSpellKey = spellSel.value;
     updateMultEcho();
+    updateSpellNote();
     calculateDamage();
   });
 
@@ -137,7 +155,12 @@ let curSpellKey = "";
     spellSel.value = DAMAGE_DEFAULTS.spellKey;
     curSpellKey = DAMAGE_DEFAULTS.spellKey;
     curSpellMultiplier = DAMAGE_DEFAULTS.spellMultiplier;
+    const [group, idx2] = DAMAGE_DEFAULTS.spellKey.split(":");
+    const list = group === "Warrior" ? DAMAGE_SPELL_DUNGEONS[idx].warrior : DAMAGE_SPELL_DUNGEONS[idx].mage;
+    const spell = list && list[+idx2];
+    curSpellNote = spell && spell.note ? spell.note : null;
     updateMultEcho();
+    updateSpellNote();
   }
 
   rebuildSpells();
@@ -145,6 +168,7 @@ let curSpellKey = "";
 
   window.__dmgApplyDefaultPick = applyDefaultPick;
   window.__dmgUpdateMultEcho = updateMultEcho;
+  window.__dmgUpdateSpellNote = updateSpellNote;
   window.__dmgRebuildSpells = rebuildSpells;
 })();
 
@@ -317,7 +341,9 @@ if (dmgToggle) dmgToggle.addEventListener("click", () => {
         $("dmgSpellPick").value = s.spellKey;
         curSpellKey = s.spellKey;
         curSpellMultiplier = spell.mult;
+        curSpellNote = spell.note || null;
         if (window.__dmgUpdateMultEcho) window.__dmgUpdateMultEcho();
+        if (window.__dmgUpdateSpellNote) window.__dmgUpdateSpellNote();
       }
     }
   }

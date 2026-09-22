@@ -170,13 +170,13 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "NL", name: "Northern Lands",
     warrior: [
       { name: "Frost Cone", mult: 112, difficulty: "Insane" },
-      { name: "Gale Barrage", mult: 119, tick: 39.67, difficulty: "Nightmare" },
+      { name: "Gale Barrage", mult: 124.44, tick: 41.48, difficulty: "Nightmare", note: "Warrior, scales with Physical Power. Fires wind bursts over 3 ticks (~41.48x each) for ~124.44x total per cast. Drops from Northern Lands on Nightmare, req level 185, sells ~110M gold. Corrected from 119x via in-game testing against Flame Shuriken." },
       { name: "Flame Shuriken", mult: 119, difficulty: "Nightmare" }
     ],
     mage: [
       { name: "Flame Strike", mult: 112 },
       { name: "Geyser", mult: 119, difficulty: "Nightmare" },
-      { name: "Soul Drain", mult: 118.98, tick: 19.83, difficulty: "Nightmare" }
+      { name: "Soul Drain", mult: 124.44, tick: 20.74, difficulty: "Nightmare", note: "Mage, scales with Spell Power. Conjures a draining circle that hits everything inside over 6 ticks (~20.74x each) for ~124.44x total per cast. Corrected from 118.98x via in-game testing against Geyser." }
     ]
   }
 ];
