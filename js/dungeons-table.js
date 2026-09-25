@@ -159,7 +159,7 @@ buildRaidInfo();
 const EXP_SHEET_ID = "1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs";
 const EXP_SHEET_GID = "0";
 const EXP_SHEET_URL = `https://docs.google.com/spreadsheets/d/${EXP_SHEET_ID}/edit?gid=${EXP_SHEET_GID}#gid=${EXP_SHEET_GID}`;
-const EXP_SNAPSHOT_DATE = "29 Aug 2026";
+const EXP_SNAPSHOT_DATE = "25 Sep 2026";
 
 const STATIC_BY_ABBR = Object.fromEntries(DUNGEONS.map(d => [d.abbr, d]));
 
