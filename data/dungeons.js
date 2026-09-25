@@ -20,9 +20,9 @@ let DUNGEONS = [
   { name:"Steampunk Sewers",   abbr:"SS", runs:{ Insane:35700000, Nightmare:59600000 } },
   { name:"Boss Raid (Lvl 130)", abbr:"BR", pending:BOSS_RAID.pending, excludeBoosts:BOSS_RAID.excludeBoosts, runs:{ "Tier 30":BOSS_RAID.xp } },
   { name:"Orbital Outpost",    abbr:"OO", runs:{ Insane:222000000, Nightmare:320000000 } },
-  { name:"Volcanic Chambers",  abbr:"VC", runs:{ Insane:750000000, Nightmare:1229000000 } },
-  { name:"Aquatic Temple",     abbr:"AT", runs:{ Insane:2036000000, Nightmare:3564000000 } },
-  { name:"Enchanted Forest",   abbr:"EF", runs:{ Insane:6900000000, Nightmare:11280000000 } },
+  { name:"Volcanic Chambers",  abbr:"VC", runs:{ Insane:1125000000, Nightmare:1843500000 } },
+  { name:"Aquatic Temple",     abbr:"AT", runs:{ Insane:3054000000, Nightmare:5346000000 } },
+  { name:"Enchanted Forest",   abbr:"EF", runs:{ Insane:10350000000, Nightmare:16920000000 } },
   { name:"Northern Lands",     abbr:"NL",
                                 runs:{ Insane:19154000000, Nightmare:38100000000, "Nightmare + Rodin":60100000000 } }, // rodin alone gives 28.6B
   { name:"Gilded Skies",       abbr:"GS", runs:{ Insane:63500000000, Nightmare:115500000000 } }, // waiting for gs to come out, will change later
