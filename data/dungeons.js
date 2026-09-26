@@ -25,10 +25,10 @@ let DUNGEONS = [
   { name:"Enchanted Forest",   abbr:"EF", runs:{ Insane:10350000000, Nightmare:16920000000 } },
   { name:"Northern Lands",     abbr:"NL",
                                 runs:{ Insane:19154000000, Nightmare:38100000000, "Nightmare + Rodin":60100000000 } }, // rodin alone gives 28.6B
-  { name:"Gilded Skies",       abbr:"GS", runs:{ Insane:63500000000, Nightmare:115500000000 } }, // waiting for gs to come out, will change later
-  { name:"Yokai Peak",         abbr:"YP", runs:{ Insane:192650000000, Nightmare:350950000000 } }, // ehh idk about this one but ill add it just in case
-  { name:"Abyssal Void",       abbr:"AV", runs:{ Insane:1070000000000, Nightmare: 1470000000000} } // This follows the old dq wiki page value, but i will update once new values are released
-// Dungeons from GS To AV are not confirmed yet, they follow the old dq wiki page values, but i will update once new values are released.
+  { name:"Gilded Skies",       abbr:"GS",
+                                runs:{ Insane:"To be recorded", Nightmare:"To be recorded", "Nightmare + Secret Boss":"To be recorded" } }, // placeholders until GS is out and the EXP is logged
+  { name:"New Dungeon",        abbr:"ND", runs:{ Insane:"???", Nightmare:"???" } } // coming soon, name and EXP not known yet
+// Yokai Peak and Abyssal Void are not releasing, so they're left out. A text value (like "To be recorded") shows as-is in the table and counts as "no EXP yet" in the calculator.
 ];
 // I will constantly keep looking at my spreadsheet if there are any updates, and i will update it here.
 const DUNGEON_ABBR = {
@@ -36,5 +36,7 @@ const DUNGEON_ABBR = {
   UW:"The Underworld", SP:"Samurai Palace", TC:"The Canals", GH:"Ghastly Harbor",
   SS:"Steampunk Sewers", BR:"Boss Raid", OO:"Orbital Outpost", VC:"Volcanic Chambers",
   AT:"Aquatic Temple", EF:"Enchanted Forest", NL:"Northern Lands", GS:"Gilded Skies",
-  YP:"Yokai Peak", AV:"Abyssal Void"
+  ND:"New Dungeon", YP:"Yokai Peak", AV:"Abyssal Void"
 };
+// Dungeons that are still on the spreadsheet but won't be released. The live EXP table skips them.
+const NOT_RELEASING = ["YP","AV"];

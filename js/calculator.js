@@ -93,7 +93,7 @@ function calculate(){
   let mult = 1;
   BOOSTS.forEach(b => { if(boostOn(b.id)) mult += b.add; });
 
-  const base = d.runs[curDiff] || 0;
+  const base = runXp(d.runs[curDiff]);
   const eff = base * mult;
 
   $("rMult").textContent = mult.toFixed(2) + "x";
@@ -116,11 +116,13 @@ function calculate(){
   $("rTotal").textContent = valid ? compact(need) : "—";
 
   [...$("tiers").children].forEach(btn => {
-    const b = d.runs[btn.dataset.diff] * mult;
-    btn.classList.toggle("blank", !d.runs[btn.dataset.diff]);
+    const raw = d.runs[btn.dataset.diff];
+    const x = runXp(raw);
+    const b = x * mult;
+    btn.classList.toggle("blank", !x);
     btn.querySelector(".tval").textContent =
-      !d.runs[btn.dataset.diff] ? "no EXP set"
-      : !valid ? compact(d.runs[btn.dataset.diff]) + " a run"
+      !x ? (typeof raw === "string" ? raw : "no EXP set")
+      : !valid ? compact(x) + " a run"
       : b ? plural(Math.ceil(need / b))
       : "no EXP set";
   });
@@ -138,7 +140,8 @@ function calculate(){
     return;
   }
   if(!eff){
-    showBig("No EXP filled in for this difficulty yet", true);
+    const raw = d.runs[curDiff];
+    showBig(typeof raw === "string" ? `${d.name} ${curDiff}: ${raw}` : "No EXP filled in for this difficulty yet", true);
     $("runsSub").textContent = "";
     $("statTime").hidden = true;
     return;

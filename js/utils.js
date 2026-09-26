@@ -34,6 +34,9 @@ function paint(colour){
   if(m) m.setAttribute("content", "#181816");
 }
 
+// A run's EXP as a number, or 0 when it's a text placeholder like "To be recorded"
+const runXp = v => typeof v === "number" && isFinite(v) ? v : 0;
+
 function compact(n){
   if(!isFinite(n)) return "—";
   const u = [[1e15,"Q"],[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e3,"K"]];

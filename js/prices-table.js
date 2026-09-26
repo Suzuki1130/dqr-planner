@@ -7,9 +7,11 @@ let pricesRows = [];
 let pricesSearchTerm = "";
 let pricesSort = { col: null, dir: 1 };
 
+const isBlankPrice = v => !v || /^N\/?A$/i.test(v);
+
 function priceCellValue(row, i){
   const v = (row[i] ?? "").toString().trim();
-  return !v || v.toUpperCase() === "NA" ? null : v;
+  return isBlankPrice(v) ? null : v;
 }
 
 function priceDisplayName(row){
@@ -74,7 +76,7 @@ function renderPricesBody(){
         td.className = "dname";
         td.textContent = priceDisplayName(r) || "—";
       } else {
-        const blank = !v || v.toUpperCase() === "NA";
+        const blank = isBlankPrice(v);
         td.className = "val " + (blank ? "blank" : "set");
         td.textContent = blank ? "—" : v;
       }
@@ -121,9 +123,12 @@ if(pricesSearchInput){
   });
 }
 
+// A dungeon row has a short name in column A (an abbreviation, or something like "New Dungeon")
+// and a price in column B. The credit lines under the table have nothing in column B.
 function looksLikeDungeonRow(row){
   const first = (row[0] ?? "").toString().trim();
-  return /^[A-Za-z]{1,6}$/.test(first);
+  const price = (row[1] ?? "").toString().trim();
+  return /^[A-Za-z][A-Za-z ]{0,15}$/.test(first) && price !== "";
 }
 
 function loadLiveSheet(){

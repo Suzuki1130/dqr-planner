@@ -11,7 +11,7 @@ const xpForLevel = n => Math.round(84 * Math.pow(1.13, n - 1)); //Formula for ex
 
 const TIER_COLOUR = {
   "easy":"#6ba97a", "medium":"#5b93ba", "hard":"#9483b0",
-  "insane":"#ea7c2f", "nightmare":"#c2685f", "nightmare + rodin":"#c7a352"
+  "insane":"#ea7c2f", "nightmare":"#c2685f", "nightmare + rodin":"#c7a352", "nightmare + secret boss":"#c7a352"
 };
 // ev 2 and ev15 CANNOT STACK
 // pretty sure there is a 1.5x exp event.

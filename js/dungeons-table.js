@@ -1,4 +1,4 @@
-const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Rodin","Tier 30"];
+const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Rodin","Nightmare + Secret Boss","Tier 30"];
 
 let expSearchTerm = "";
 let expSort = { col: null, dir: 1 }; // col: "name" or a difficulty key
@@ -15,7 +15,7 @@ function sortedFilteredDungeons(cols){
     const col = expSort.col, dir = expSort.dir;
     rows.sort((a,b) => {
       if(col === "name") return a.name.localeCompare(b.name) * dir;
-      const av = a.runs[col], bv = b.runs[col];
+      const av = runXp(a.runs[col]) || null, bv = runXp(b.runs[col]) || null;
       if(av == null && bv == null) return 0;
       if(av == null) return 1;   // blanks always sink to the bottom
       if(bv == null) return -1;
@@ -74,10 +74,11 @@ function buildExpTable(){
     cols.forEach(c => {
       const td = document.createElement("td");
       const v = d.runs[c];
-      td.className = "val " + (v ? "set" : "blank");
+      const n = runXp(v);
+      td.className = "val " + (n ? "set" : "blank");
       td.dataset.label = c;
-      td.textContent = v ? compact(v) : "—";
-      if(v) td.title = fmtVal(v) + " EXP";
+      td.textContent = n ? compact(n) : (typeof v === "string" ? v : "—");
+      if(n) td.title = fmtVal(n) + " EXP";
       tr.appendChild(td);
     });
     body.appendChild(tr);
@@ -159,9 +160,10 @@ buildRaidInfo();
 const EXP_SHEET_ID = "1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs";
 const EXP_SHEET_GID = "0";
 const EXP_SHEET_URL = `https://docs.google.com/spreadsheets/d/${EXP_SHEET_ID}/edit?gid=${EXP_SHEET_GID}#gid=${EXP_SHEET_GID}`;
-const EXP_SNAPSHOT_DATE = "25 Sep 2026";
+const EXP_SNAPSHOT_DATE = "26 Sep 2026";
 
-const STATIC_BY_ABBR = Object.fromEntries(DUNGEONS.map(d => [d.abbr, d]));
+const DUNGEONS_STATIC = DUNGEONS.slice();
+const STATIC_BY_ABBR = Object.fromEntries(DUNGEONS_STATIC.map(d => [d.abbr, d]));
 
 function parseExpCell(v){
   if(v === "" || v === null || v === undefined) return null;
@@ -175,16 +177,19 @@ function normaliseColumnKey(raw){
   const key = (raw || "").trim();
   if(key === "T1~T30") return "Tier 30";
   if(/nightmare.*(rodin|odin)/i.test(key)) return "Nightmare + Rodin";
+  if(/nightmare.*(secret|4th)/i.test(key)) return "Nightmare + Secret Boss";
   return key;
 }
 
 function buildDungeonsFromSheet(cols, rows){
-  const out = [];
+  const liveByAbbr = {};
+  const extra = [];
   rows.forEach(row => {
     const raw = (row[0] ?? "").toString().trim();
     const m = raw.match(/^([A-Za-z]{2})\s*(?:\((.*)\))?\s*$/);
     if(!m) return;
     const abbr = m[1].toUpperCase();
+    if(NOT_RELEASING.includes(abbr)) return;
     const flag = (m[2] || "").trim();
 
     const runs = {};
@@ -209,9 +214,12 @@ function buildDungeonsFromSheet(cols, rows){
       entry.note = "No EXP logged on the spreadsheet yet.";
     }
 
-    out.push(entry);
+    if(base) liveByAbbr[abbr] = entry;
+    else extra.push(entry);
   });
-  return out;
+  if(!Object.keys(liveByAbbr).length && !extra.length) return [];
+  // keep the order from data/dungeons.js, and keep rows the sheet doesn't have (like "New Dungeon")
+  return DUNGEONS_STATIC.map(d => liveByAbbr[d.abbr] || d).concat(extra);
 }
 
 function refreshFromDungeons(){
