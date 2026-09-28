@@ -28,7 +28,6 @@ let DUNGEONS = [
   { name:"Gilded Skies",       abbr:"GS",
                                 runs:{ Insane:"To be recorded", Nightmare:"To be recorded", "Nightmare + Secret Boss":"To be recorded" } }, // placeholders until GS is out and the EXP is logged
   { name:"New Dungeon",        abbr:"ND", runs:{ Insane:"???", Nightmare:"???" } } // coming soon, name and EXP not known yet
-// Yokai Peak and Abyssal Void are not releasing, so they're left out. A text value (like "To be recorded") shows as-is in the table and counts as "no EXP yet" in the calculator.
 ];
 // I will constantly keep looking at my spreadsheet if there are any updates, and i will update it here.
 const DUNGEON_ABBR = {
