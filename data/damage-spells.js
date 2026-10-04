@@ -2,8 +2,8 @@ const DAMAGE_SPELL_DUNGEONS = [
   {
     abbr: "PI", name: "Pirate Island",
     warrior: [
-      { name: "Demonic Strike", mult: 5.6, difficulty: "Insane" },
-      { name: "Enchanted Spinning Blades", mult: 21, tick: 1.75 }
+      { name: "Demonic Strike", mult: 8.25, difficulty: "Insane", note: "buffed from 5.6x" },
+      { name: "Enchanted Spinning Blades", mult: 29.4, tick: 2.45, note: "buffed from 21x" }
     ],
     mage: [
       { name: "Ghostly Cannon Barrage", mult: 27.6, tick: 2.3, difficulty: "Insane" },
@@ -15,24 +15,24 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "KC", name: "King's Castle",
     warrior: [
       { name: "Glacial Blows", mult: 16.8, tick: 4.2, difficulty: "Insane" },
-      { name: "Blade Throw", mult: 12.4, tick: 6.2, difficulty: "Nightmare" }
+      { name: "Blade Throw", mult: 14.26, tick: 7.13, difficulty: "Nightmare", note: "buffed from 12.4x" }
     ],
     mage: [
-      { name: "Void Beam", mult: 27.9, tick: 4.65, difficulty: "Nightmare" },
-      { name: "Electric Boom", mult: 25.5, tick: 4.25, difficulty: "Nightmare" },
-      { name: "Thunderous Blast", mult: 9, difficulty: "Insane" }
+      { name: "Void Beam", mult: 32.09, tick: 5.35, difficulty: "Nightmare", note: "buffed from 27.9x" },
+      { name: "Electric Boom", mult: 30.6, tick: 5.1, difficulty: "Nightmare", note: "buffed from 25.5x" },
+      { name: "Thunderous Blast", mult: 10.8, difficulty: "Insane", note: "buffed from 9x" }
     ]
   },
   {
     abbr: "UW", name: "The Underworld",
     warrior: [
-      { name: "Rending Slice", mult: 19.6, difficulty: "Nightmare" },
-      { name: "Infernal Strike", mult: 19.6, difficulty: "Nightmare", note: "7 ticks: 4.9x first, 2.45x each after" }
+      { name: "Rending Slice", mult: 22.5, difficulty: "Nightmare", note: "buffed from 19.6x" },
+      { name: "Infernal Strike", mult: 23.52, difficulty: "Nightmare", note: "7 ticks: 5.88x first, 2.94x each after (buffed from 19.6x)" }
     ],
     mage: [
-      { name: "Infernal Orbs", mult: 26.4, tick: 2.2, difficulty: "Insane" },
-      { name: "Demonic Spikes", mult: 27.12, tick: 2.26, difficulty: "Insane" },
-      { name: "Ice Totem", mult: 31, tick: 3.1, difficulty: "Nightmare" },
+      { name: "Infernal Orbs", mult: 29.04, tick: 2.42, difficulty: "Insane", note: "buffed from 26.4x" },
+      { name: "Demonic Spikes", mult: 29.83, tick: 2.49, difficulty: "Insane", note: "buffed from 27.12x" },
+      { name: "Ice Totem", mult: 32.55, tick: 3.26, difficulty: "Nightmare", note: "buffed from 31x" },
       { name: "Ice Nova", mult: 27, tick: 2.25, difficulty: "Nightmare" }
     ]
   },
@@ -40,14 +40,14 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "SP", name: "Samurai Palace",
     warrior: [
       { name: "Flame Cyclone", mult: 49, tick: 3.27, note: "buffed from 39x" },
-      { name: "Berserk", mult: 28.6, tick: 2.6 },
+      { name: "Berserk", mult: 34.32, tick: 3.12, note: "buffed from 28.6x" },
       { name: "Lava Lash", mult: 17.4, tick: 8.7, difficulty: "Insane" }
     ],
     mage: [
-      { name: "Hand Cannon", mult: 12, difficulty: "Insane" },
+      { name: "Hand Cannon", mult: 20.4, difficulty: "Insane", note: "buffed from 12x" },
       { name: "Earth Clap", mult: 21, difficulty: "Insane" },
       { name: "Enchanted Shuriken", mult: 26, tick: 13, difficulty: "Insane" },
-      { name: "Ghostly Rampage", mult: 30.6, tick: 5.1, difficulty: "Nightmare" },
+      { name: "Ghostly Rampage", mult: 35.19, tick: 5.87, difficulty: "Nightmare", note: "buffed from 30.6x" },
       { name: "Illusion Blast", mult: 38, tick: 9.5, difficulty: "Nightmare" }
     ]
   },
@@ -144,12 +144,12 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "AT", name: "Aquatic Temple",
     warrior: [
       { name: "Spear Strike", mult: 86 },
-      { name: "Ice Barrage", mult: 92 },
+      { name: "Ice Barrage", mult: 94.27, note: "buffed from 92x" },
       { name: "Ice Crash", mult: 92 }
     ],
     mage: [
       { name: "Water Orb", mult: 86 },
-      { name: "Ice Spikes", mult: 92 },
+      { name: "Ice Spikes", mult: 94.27, note: "buffed from 92x" },
       { name: "Aquatic Smite", mult: 92 }
     ]
   },
@@ -170,13 +170,13 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "NL", name: "Northern Lands",
     warrior: [
       { name: "Frost Cone", mult: 112, difficulty: "Insane" },
-      { name: "Gale Barrage", mult: 124.44, tick: 41.48, difficulty: "Nightmare", note: "Warrior, scales with Physical Power. Fires wind bursts over 3 ticks (~41.48x each) for ~124.44x total per cast. Drops from Northern Lands on Nightmare, req level 185, sells ~110M gold. Corrected from 119x via in-game testing against Flame Shuriken." },
+      { name: "Gale Barrage", mult: 122.57, tick: 40.86, difficulty: "Nightmare", note: "Warrior, scales with Physical Power. Fires wind bursts over 3 ticks (~40.86x each) for ~122.57x total per cast. Drops from Northern Lands on Nightmare, req level 185, sells ~110M gold. Officially corrected by the game owner, up from 119x." },
       { name: "Flame Shuriken", mult: 119, difficulty: "Nightmare" }
     ],
     mage: [
       { name: "Flame Strike", mult: 112 },
       { name: "Geyser", mult: 119, difficulty: "Nightmare" },
-      { name: "Soul Drain", mult: 124.44, tick: 20.74, difficulty: "Nightmare", note: "Mage, scales with Spell Power. Conjures a draining circle that hits everything inside over 6 ticks (~20.74x each) for ~124.44x total per cast. Corrected from 118.98x via in-game testing against Geyser." }
+      { name: "Soul Drain", mult: 122.57, tick: 20.43, difficulty: "Nightmare", note: "Mage, scales with Spell Power. Conjures a draining circle that hits everything inside over 6 ticks (~20.43x each) for ~122.57x total per cast. Officially corrected by the game owner, up from 118.98x." }
     ]
   }
 ];
