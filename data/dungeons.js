@@ -9,9 +9,9 @@ const BOSS_RAID = {
 };
 
 let DUNGEONS = [
-  { name:"Desert Temple",  abbr:"DT", runs:{ Easy:253, Medium:396, Hard:785, Insane:1307, Nightmare:2669 } },
-  { name:"Winter Outpost", abbr:"WO", runs:{ Easy:8340, Medium:11300, Hard:16140, Insane:27840, Nightmare:46180 } },
-  { name:"Pirate Island",      abbr:"PI", runs:{ Insane:51150, Nightmare:84910 } },
+  { name:"Desert Temple",  abbr:"DT", runs:{ Easy:457, Medium:951, Hard:2047, Insane:3200, Nightmare:6418 } },
+  { name:"Winter Outpost", abbr:"WO", runs:{ Easy:8515, Medium:12161, Hard:21432.5, Insane:37058.75, Nightmare:61510 } },
+  { name:"Pirate Island",      abbr:"PI", runs:{ Insane:49018, Nightmare:78775 } },
   { name:"King's Castle",      abbr:"KC", runs:{ Insane:135900, Nightmare:271800 } },
   { name:"The Underworld",     abbr:"UW", runs:{ Insane:546000, Nightmare:924000 } },
   { name:"Samurai Palace",     abbr:"SP", runs:{ Insane:1724000, Nightmare:2280000 } },

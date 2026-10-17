@@ -24,7 +24,7 @@ function gearPot(start, upgrades){
   for(let i = 0; i < upgrades; i++) S += Math.min(10, Math.floor(S / 20));
   return S;
 }
-// This is the formula for dungeons desert temple to winter outpost
+// This is the formula for dungeons desert temple to winter outpost ARGHHH WHY DO THEY HAVE TO BE SEPARATE FORMULAS, IT MAKES NO SENSE.
 // since it doesnt follow the upgrades * 10 + current pot rule
 // For python the code is import math
 //S = 1175              # current pot
