@@ -26,7 +26,7 @@ let DUNGEONS = [
   { name:"Northern Lands",     abbr:"NL",
                                 runs:{ Insane:19154000000, Nightmare:38100000000, "Nightmare + Rodin":60100000000 } }, // rodin alone gives 28.6B
   { name:"Gilded Skies",       abbr:"GS",
-                                runs:{ Insane:"To be recorded", Nightmare:"To be recorded", "Nightmare + Secret Boss":"To be recorded" } }, // placeholders until GS is out and the EXP is logged
+                                runs:{ Insane:66666666667, Nightmare:123076923077, "Nightmare + Vytelus":"To be recorded" } }, // Vytelus = GS secret boss; sheet still has N/A for that column
   { name:"New Dungeon",        abbr:"ND", runs:{ Insane:"???", Nightmare:"???" } } // coming soon, name and EXP not known yet
 ];
 // I will constantly keep looking at my spreadsheet if there are any updates, and i will update it here.

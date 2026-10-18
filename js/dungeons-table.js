@@ -1,4 +1,4 @@
-const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Rodin","Nightmare + Secret Boss","Tier 30"];
+const DIFF_ORDER = ["Easy","Medium","Hard","Insane","Nightmare","Nightmare + Rodin","Nightmare + Vytelus","Tier 30"];
 
 let expSearchTerm = "";
 let expSort = { col: null, dir: 1 }; // col: "name" or a difficulty key
@@ -160,7 +160,7 @@ buildRaidInfo();
 const EXP_SHEET_ID = "1_3BmMT_UAX4IEjvcfWR5f2ylWV7oZOW80luDvkPaMUs";
 const EXP_SHEET_GID = "0";
 const EXP_SHEET_URL = `https://docs.google.com/spreadsheets/d/${EXP_SHEET_ID}/edit?gid=${EXP_SHEET_GID}#gid=${EXP_SHEET_GID}`;
-const EXP_SNAPSHOT_DATE = "26 Sep 2026";
+const EXP_SNAPSHOT_DATE = "18 Oct 2026";
 
 const DUNGEONS_STATIC = DUNGEONS.slice();
 const STATIC_BY_ABBR = Object.fromEntries(DUNGEONS_STATIC.map(d => [d.abbr, d]));
@@ -177,7 +177,7 @@ function normaliseColumnKey(raw){
   const key = (raw || "").trim();
   if(key === "T1~T30") return "Tier 30";
   if(/nightmare.*(rodin|odin)/i.test(key)) return "Nightmare + Rodin";
-  if(/nightmare.*(secret|4th)/i.test(key)) return "Nightmare + Secret Boss";
+  if(/nightmare.*(vytelus|secret|4th)/i.test(key)) return "Nightmare + Vytelus";
   return key;
 }
 

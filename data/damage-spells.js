@@ -170,13 +170,26 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "NL", name: "Northern Lands",
     warrior: [
       { name: "Frost Cone", mult: 112, difficulty: "Insane" },
-      { name: "Gale Barrage", mult: 122.57, tick: 40.86, difficulty: "Nightmare", note: "Warrior, scales with Physical Power. Fires wind bursts over 3 ticks (~40.86x each) for ~122.57x total per cast. Drops from Northern Lands on Nightmare, req level 185, sells ~110M gold. Officially corrected by the game owner, up from 119x." },
+      { name: "Gale Barrage", mult: 119, tick: 39.67, difficulty: "Nightmare", note: "Nerfed ~3%: was 122.57x, now 119x. Warrior, scales with Physical Power. Fires wind bursts over 3 ticks (~39.67x each). Drops from Northern Lands on Nightmare, req level 185, sells ~110M gold." },
       { name: "Flame Shuriken", mult: 119, difficulty: "Nightmare" }
     ],
     mage: [
       { name: "Flame Strike", mult: 112 },
       { name: "Geyser", mult: 119, difficulty: "Nightmare" },
-      { name: "Soul Drain", mult: 122.57, tick: 20.43, difficulty: "Nightmare", note: "Mage, scales with Spell Power. Conjures a draining circle that hits everything inside over 6 ticks (~20.43x each) for ~122.57x total per cast. Officially corrected by the game owner, up from 118.98x." }
+      { name: "Soul Drain", mult: 119, tick: 19.83, difficulty: "Nightmare", note: "Nerfed ~3%: was 122.57x, now 119x. Mage, scales with Spell Power. Conjures a draining circle that hits everything inside over 6 ticks (~19.83x each)." }
+    ]
+  },
+  {
+    abbr: "GS", name: "Gilded Skies",
+    warrior: [
+      { name: "Solar Beam", mult: 126, tick: 63, note: "Req level 190 · 6.5s cooldown (0.5s activation + 6s listed) · sells 200M · Epic. Beam from the palm, then an explosive AoE second hit — 2 ticks of 63x." },
+      { name: "God Spear", mult: 145.6, note: "Buffed 4% from 140x. Req level 195 · 6s cooldown · sells 240M · Epic. A giant red spear falls from the sky for AoE damage." },
+      { name: "Blade Barrage", mult: 140, note: "Req level 195 · 6s cooldown · sells 240M · Epic. Shoots a flurry of red blades in front of the caster for AoE damage." }
+    ],
+    mage: [
+      { name: "Jade Roller", mult: 126, note: "Req level 190 · 6s cooldown · sells 200M · Epic. One tick — a jade beam appears in front of the caster for AoE damage." },
+      { name: "Amethyst Beams", mult: 133, note: "Req level 195 · 5.8s cooldown · sells 240M · Epic. One tick — an array of amethyst beams launches in front of the caster for AoE damage." },
+      { name: "Jade Rain", mult: 133, note: "Req level 195 · 6s cooldown · sells 240M · Epic. One tick — jade crystal shards fall from the sky for AoE damage." }
     ]
   }
 ];
