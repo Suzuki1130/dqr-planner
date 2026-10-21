@@ -17,6 +17,10 @@ const DAMAGE_DEFAULTS = {
 
 const KEY_DAMAGE = "dqr.damage.v1";
 
+// Each hit rolls ±5% around the formula's number (matches dqdamagecalc: low 0.95x, high 1.05x).
+const DAMAGE_SPREAD = 0.05;
+const damageRange = avg => ({ low: avg * (1 - DAMAGE_SPREAD), avg, high: avg * (1 + DAMAGE_SPREAD) });
+
 function calculateBaseDamage(weaponPot, armorPot, helmetPot, skillPoints, spellMultiplier) {
   return (
     weaponPot *
@@ -223,11 +227,12 @@ function calculateDamage() {
       true
     );
     $("dmgSub").textContent = "";
-    ["dmgBase", "dmgInner", "dmgFinal", "dmgWeaponEcho", "dmgArmorEcho", "dmgHelmetEcho", "dmgSkillEcho", "dmgSpellEcho"]
+    ["dmgBase", "dmgInner", "dmgFinal", "dmgLow", "dmgHigh", "dmgWeaponEcho", "dmgArmorEcho", "dmgHelmetEcho", "dmgSkillEcho", "dmgSpellEcho"]
       .forEach(id => { const e = $(id); if (e) e.textContent = "—"; });
     $("dmgCompareNone").textContent = "—";
     $("dmgCompareWithout").textContent = "—";
     $("dmgCompareWith").textContent = "—";
+    ["dmgCompareNoneRange", "dmgCompareWithoutRange", "dmgCompareWithRange"].forEach(id => { const e = $(id); if (e) e.textContent = ""; });
     $("dmgCompareDiff").textContent = "";
     if (breakdownBody) breakdownBody.innerHTML = "";
     return;
@@ -242,6 +247,9 @@ function calculateDamage() {
   $("dmgBase").textContent = formatDamageCompact(base);
   $("dmgInner").textContent = inner.toFixed(2) + "x";
   $("dmgFinal").textContent = formatDamageCompact(final);
+  const range = damageRange(final);
+  $("dmgLow").textContent = formatDamageCompact(range.low);
+  $("dmgHigh").textContent = formatDamageCompact(range.high);
   $("dmgWeaponEcho").textContent = compact(weapon);
   $("dmgArmorEcho").textContent = compact(armor);
   $("dmgHelmetEcho").textContent = compact(helmet);
@@ -259,6 +267,12 @@ function calculateDamage() {
   $("dmgCompareNone").textContent = formatDamageCompact(noneDamage);
   $("dmgCompareWithout").textContent = formatDamageCompact(withoutDamage);
   $("dmgCompareWith").textContent = formatDamageCompact(withDamage);
+  [["dmgCompareNoneRange", noneDamage], ["dmgCompareWithoutRange", withoutDamage], ["dmgCompareWithRange", withDamage]].forEach(([id, avg]) => {
+    const e = $(id);
+    if (!e) return;
+    const r = damageRange(avg);
+    e.textContent = `${formatDamageCompact(r.low)} – ${formatDamageCompact(r.high)}`;
+  });
   $("dmgCompareDiff").textContent = `Without Inner → With Enhanced Inner: ${formatDamageCompact(diff)} more · +${pct.toFixed(2)}%`;
 
   if (breakdownBody) {
@@ -278,6 +292,10 @@ function calculateDamage() {
       <h4>Inner</h4>
       <div class="brow total"><span>${formatDamageCompact(base)} × ${inner.toFixed(2)}</span><span>${formatDamageCompact(final)}</span></div>
       <div class="brow"><span style="opacity:.65">exact</span><span>${formatExact(final)}</span></div>
+      <h4>Hit range (±${Math.round(DAMAGE_SPREAD * 100)}%)</h4>
+      <div class="brow"><span>Lowest · ${formatDamageCompact(final)} × ${(1 - DAMAGE_SPREAD).toFixed(2)}</span><span>${formatDamageCompact(range.low)}</span></div>
+      <div class="brow"><span>Average</span><span>${formatDamageCompact(final)}</span></div>
+      <div class="brow"><span>Highest · ${formatDamageCompact(final)} × ${(1 + DAMAGE_SPREAD).toFixed(2)}</span><span>${formatDamageCompact(range.high)}</span></div>
     `;
   }
 

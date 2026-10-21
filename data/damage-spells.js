@@ -183,8 +183,8 @@ const DAMAGE_SPELL_DUNGEONS = [
     abbr: "GS", name: "Gilded Skies",
     warrior: [
       { name: "Solar Beam", mult: 126, tick: 63, note: "Req level 190 · 6.5s cooldown (0.5s activation + 6s listed) · sells 200M · Epic. Beam from the palm, then an explosive AoE second hit — 2 ticks of 63x." },
-      { name: "God Spear", mult: 145.6, note: "Buffed 4% from 140x. Req level 195 · 6s cooldown · sells 240M · Epic. A giant red spear falls from the sky for AoE damage." },
-      { name: "Blade Barrage", mult: 140, note: "Req level 195 · 6s cooldown · sells 240M · Epic. Shoots a flurry of red blades in front of the caster for AoE damage." }
+      { name: "God Spear", mult: 138, note: "Changed to 138x (was 145.6x after a 4% buff from 140x). Req level 195 · 6s cooldown · sells 240M · Epic. A giant red spear falls from the sky for AoE damage." },
+      { name: "Blade Barrage", mult: 133, note: "Changed to 133x (was 140x). Req level 195 · 6s cooldown · sells 240M · Epic. Shoots a flurry of red blades in front of the caster for AoE damage." }
     ],
     mage: [
       { name: "Jade Roller", mult: 126, note: "Req level 190 · 6s cooldown · sells 200M · Epic. One tick — a jade beam appears in front of the caster for AoE damage." },
