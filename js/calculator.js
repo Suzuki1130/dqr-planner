@@ -11,7 +11,7 @@ BOOSTS.forEach(b => {
   const btn = document.createElement("button");
   btn.type = "button"; btn.className = "pill"; btn.id = "b-" + b.id;
   btn.setAttribute("aria-pressed","false");
-  btn.innerHTML = `<span>${b.name}</span><b>+${Math.round(b.add*100)}%</b>`;
+  btn.innerHTML = `<span>${b.name}</span><b>${b.mult ? "×" + b.mult : "+" + Math.round(b.add*100) + "%"}</b>`;
   btn.addEventListener("click", () => {
     if(btn.dataset.excluded === "true") return;
     const on = btn.getAttribute("aria-pressed") === "true";
@@ -90,22 +90,30 @@ function calculate(){
   else if(bad){ echo.textContent = "not a number"; echo.classList.add("bad"); }
   else { echo.textContent = "= " + Math.max(0, haveRaw).toLocaleString() + " EXP"; echo.classList.remove("bad"); }
 
-  let mult = 1;
-  BOOSTS.forEach(b => { if(boostOn(b.id)) mult += b.add; });
+  // additive boosts sum onto 1 first, then multiplicative ones (HC) scale that total
+  let addSum = 1;
+  BOOSTS.forEach(b => { if(boostOn(b.id) && b.add) addSum += b.add; });
+  let mult = addSum;
+  BOOSTS.forEach(b => { if(boostOn(b.id) && b.mult) mult *= b.mult; });
 
   const base = runXp(d.runs[curDiff]);
   const eff = base * mult;
 
-  $("rMult").textContent = mult.toFixed(2) + "x";
+  $("rMult").textContent = mult.toFixed(4).replace(/0+$/,"").replace(/\.$/,"") + "x";
 
   const on = BOOSTS.filter(b => boostOn(b.id));
   const bd = $("breakdown");
   bd.classList.toggle("on", on.length > 0);
   if(on.length){
+    const adds = on.filter(b => b.add), mults = on.filter(b => b.mult);
     bd.innerHTML = "<h4>What's in the multiplier</h4>"
       + '<div class="brow"><span>Base</span><span>1.00</span></div>'
-      + on.map(b => `<div class="brow"><span>${b.name}</span><span>+${b.add.toFixed(2)}</span></div>`).join("")
-      + `<div class="brow total"><span>Total</span><span>${mult.toFixed(2)}x</span></div>`;
+      + adds.map(b => `<div class="brow"><span>${b.name}</span><span>+${b.add.toFixed(2)}</span></div>`).join("")
+      + (mults.length
+          ? `<div class="brow"><span>Subtotal</span><span>${addSum.toFixed(2)}x</span></div>`
+            + mults.map(b => `<div class="brow"><span>${b.name}</span><span>×${b.mult.toFixed(2)}</span></div>`).join("")
+          : "")
+      + `<div class="brow total"><span>Total</span><span>${mult.toFixed(4).replace(/0+$/,"").replace(/\.$/,"")}x</span></div>`;
   }
   $("rEff").textContent = eff ? compact(eff) : "—";
 

@@ -1,7 +1,9 @@
+// add:  adds onto the base 1 (additive)
+// mult: multiplies the summed total afterwards (multiplicative)
 const BOOSTS = [
   { id:"vip",      name:"VIP game pass", add:0.20 },
   { id:"solo",     name:"Solo",          add:0.10 },
-  { id:"hc",       name:"HC (Hardcore)", add:0.25 },
+  { id:"hc",       name:"HC (Hardcore)", mult:1.25 }, // multiplies the total of everything else, doesn't add
   { id:"expboost", name:"EXP Boost",     add:1.00 },
   { id:"ev2",      name:"2x EXP event",  add:1.00, group:"event" },
   { id:"ev15",     name:"1.5x EXP event",add:0.50, group:"event" }

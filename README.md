@@ -130,7 +130,9 @@ red *watch* badge plus a warning box under the table with the note's text.
 
 **Add or change a boost:** add a line to `BOOSTS` in `data/boosts.js`. `add: 0.5` means +50%.
 Boosts that share a `group` can't be picked at the same time, which is how the two events
-behave. Solo and HC (Hardcore) are each `add: 0.10` — a flat +10%, same shape as VIP's +20%.
+behave. Solo is `add: 0.10` — a flat +10%, same shape as VIP's +20%. HC (Hardcore) is different:
+it uses `mult: 1.25` instead of `add`, which multiplies the summed total of every other boost by
+1.25 rather than adding onto it. Any boost can use `mult` instead of `add` the same way.
 
 ```js
 { id:"myboost", name:"Some new event", add:0.50 },
@@ -211,8 +213,9 @@ n = 0 to 23, in order — and the small remaining slack goes away entirely.
 
 ## How the maths works
 
-- Boosts add together on top of 1. VIP (+0.2) with Solo (+0.1), HC (+0.1) and an EXP Boost
-  (+1.0) is **2.4x**, not something you'd get by multiplying them together.
+- Boosts add together on top of 1, except HC, which multiplies the result by 1.25.
+  VIP (+0.2) with Solo (+0.1) and an EXP Boost (+1.0) is **2.3x**; turn HC on as well and it's
+  2.3 × 1.25 = **2.875x**.
 - Total EXP needed = the sum of every level's requirement from your level up to the target,
   minus the EXP you already have.
 - Current EXP accepts shorthand: `1K`, `2.5M`, `1B`, `1T`.
@@ -220,7 +223,7 @@ n = 0 to 23, in order — and the small remaining slack goes away entirely.
 - Every difficulty of the selected dungeon shows its own run count, so you can see what
   dropping down a tier costs you.
 - To work out a raw base EXP value from a boosted run by hand: divide what you gained by the
-  multiplier that was active (e.g. VIP + Solo + HC active = divide by 1.4).
+  multiplier that was active (e.g. VIP + Solo + HC active = divide by (1 + 0.2 + 0.1) × 1.25 = 1.625).
 
 There is no party-size bonus in the multiplier sense — EXP isn't split between party members,
 everyone gets the full amount.
