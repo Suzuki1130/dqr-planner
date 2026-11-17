@@ -134,6 +134,11 @@ behave. Solo is `add: 0.10` — a flat +10%, same shape as VIP's +20%. HC (Hardc
 it uses `mult: 1.25` instead of `add`, which multiplies the summed total of every other boost by
 1.25 rather than adding onto it. Any boost can use `mult` instead of `add` the same way.
 
+HC, No Hit (`mult: 1.35`), Hell (`mult: 1.50`) and Hell + No Hit (`mult: 1.85`) are run modes, so
+they share `group:"mode"` and only one can be on. The last three have `onlyIn:["GS"]`: a boost with
+`onlyIn` (a list of dungeon abbrs) is hidden on the Run Calculator for every other dungeon. Add an
+abbr to that list if a mode comes to another dungeon.
+
 ```js
 { id:"myboost", name:"Some new event", add:0.50 },
 ```
@@ -215,7 +220,8 @@ n = 0 to 23, in order — and the small remaining slack goes away entirely.
 
 - Boosts add together on top of 1, except HC, which multiplies the result by 1.25.
   VIP (+0.2) with Solo (+0.1) and an EXP Boost (+1.0) is **2.3x**; turn HC on as well and it's
-  2.3 × 1.25 = **2.875x**.
+  2.3 × 1.25 = **2.875x**. In Gilded Skies, No Hit / Hell / Hell + No Hit replace HC the same way
+  (2.3 × 1.85 = **4.255x** for Hell + No Hit).
 - Total EXP needed = the sum of every level's requirement from your level up to the target,
   minus the EXP you already have.
 - Current EXP accepts shorthand: `1K`, `2.5M`, `1B`, `1T`.

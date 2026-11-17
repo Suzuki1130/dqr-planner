@@ -31,9 +31,12 @@ function updateBoostAvailability(d){
   const excluded = new Set(d.excludeBoosts || []);
   BOOSTS.forEach(b => {
     const btn = $("b-"+b.id);
-    const isExcluded = excluded.has(b.id);
+    // dungeon-specific modes (onlyIn) are hidden everywhere else, not just greyed out
+    const notHere = !!b.onlyIn && !b.onlyIn.includes(d.abbr);
+    const isExcluded = notHere || excluded.has(b.id);
     btn.dataset.excluded = String(isExcluded);
-    btn.title = isExcluded ? `${d.name} doesn't support ${b.name}.` : "";
+    btn.style.display = notHere ? "none" : "";
+    btn.title = isExcluded && !notHere ? `${d.name} doesn't support ${b.name}.` : "";
     if(isExcluded) btn.setAttribute("aria-pressed","false");
   });
 }
